@@ -1,0 +1,125 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.store = void 0;
+// In-memory storage for MVP
+class Store {
+    constructor() {
+        this.users = new Map();
+        this.messages = [];
+        this.onlineUsers = new Set();
+        // Initialize with demo users
+        this.initializeDemoUsers();
+    }
+    initializeDemoUsers() {
+        const demoUsers = [
+            {
+                id: '1',
+                username: 'Alice',
+                isOnline: false,
+                createdAt: new Date('2024-01-01')
+            },
+            {
+                id: '2',
+                username: 'Bob',
+                isOnline: false,
+                createdAt: new Date('2024-01-01')
+            },
+            {
+                id: '3',
+                username: 'Charlie',
+                isOnline: false,
+                createdAt: new Date('2024-01-01')
+            },
+            {
+                id: '4',
+                username: 'Diana',
+                isOnline: false,
+                createdAt: new Date('2024-01-01')
+            },
+            {
+                id: '5',
+                username: 'Eve',
+                isOnline: false,
+                createdAt: new Date('2024-01-01')
+            },
+        ];
+        demoUsers.forEach(user => {
+            this.users.set(user.id, user);
+        });
+    }
+    // User management
+    addUser(username, password) {
+        const id = Date.now().toString();
+        const user = {
+            id,
+            username,
+            password,
+            isOnline: false,
+            createdAt: new Date(),
+        };
+        this.users.set(id, user);
+        return user;
+    }
+    getUser(id) {
+        return this.users.get(id);
+    }
+    getUserByUsername(username) {
+        for (const user of this.users.values()) {
+            if (user.username === username) {
+                return user;
+            }
+        }
+        return undefined;
+    }
+    getAllUsers() {
+        return Array.from(this.users.values());
+    }
+    setUserOnline(userId, isOnline) {
+        const user = this.users.get(userId);
+        if (user) {
+            user.isOnline = isOnline;
+            user.lastSeen = new Date();
+            if (isOnline) {
+                this.onlineUsers.add(userId);
+            }
+            else {
+                this.onlineUsers.delete(userId);
+            }
+        }
+    }
+    getOnlineUsers() {
+        return Array.from(this.onlineUsers);
+    }
+    // Message management
+    addMessage(senderId, receiverId, text) {
+        const message = {
+            id: Date.now().toString(),
+            senderId,
+            receiverId,
+            text,
+            createdAt: new Date(),
+        };
+        this.messages.push(message);
+        return message;
+    }
+    getMessagesBetweenUsers(userId1, userId2, limit = 50) {
+        return this.messages
+            .filter(msg => (msg.senderId === userId1 && msg.receiverId === userId2) ||
+            (msg.senderId === userId2 && msg.receiverId === userId1))
+            .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+            .slice(-limit);
+    }
+    getRecentMessages(userId, limit = 20) {
+        return this.messages
+            .filter(msg => msg.senderId === userId || msg.receiverId === userId)
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .slice(0, limit);
+    }
+    markMessageAsRead(messageId, userId) {
+        const message = this.messages.find(msg => msg.id === messageId);
+        if (message && message.receiverId === userId) {
+            message.readAt = new Date();
+        }
+    }
+}
+exports.store = new Store();
