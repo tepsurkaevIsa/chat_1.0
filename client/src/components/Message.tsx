@@ -1,5 +1,6 @@
 import { Message as MessageType, User } from '../types';
 import { formatDistanceToNow } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 interface MessageProps {
   message: MessageType;
@@ -32,7 +33,7 @@ export function Message({ message, currentUser, otherUser }: MessageProps) {
           <span className={`text-xs opacity-75 ${
             isOwn ? 'text-primary-100' : 'text-gray-500 dark:text-gray-400'
           }`}>
-            {formatDistanceToNow(createdAt, { addSuffix: true })}
+            {formatDistanceToNow(createdAt, { addSuffix: true, locale: ru })}
           </span>
           {isOwn && message.readAt && (
             <span className="text-xs opacity-75 ml-2 flex-shrink-0">✓✓</span>

@@ -19,23 +19,23 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
     const newErrors: { [key: string]: string } = {};
 
     if (!username.trim()) {
-      newErrors.username = 'Username is required';
+      newErrors.username = 'Требуется имя пользователя';
     } else if (username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
+      newErrors.username = 'Имя пользователя должно быть не короче 3 символов';
     } else if (username.length > 20) {
-      newErrors.username = 'Username must be less than 20 characters';
+      newErrors.username = 'Имя пользователя должно быть короче 20 символов';
     }
 
     if (!password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Требуется пароль';
     } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+      newErrors.password = 'Пароль должен быть не короче 6 символов';
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
+      newErrors.confirmPassword = 'Подтвердите пароль';
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = 'Пароли не совпадают';
     }
 
     setErrors(newErrors);
@@ -58,17 +58,17 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
             <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
           </div>
           <h2 className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-            Create Account
+            Создать аккаунт
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Register to start chatting
+            Зарегистрируйтесь, чтобы начать общение
           </p>
         </div>
         
         <form className="mt-6 sm:mt-8 space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Username
+              Имя пользователя
             </label>
             <input
               id="username"
@@ -80,7 +80,7 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
               className={`relative block w-full px-3 py-3 sm:py-2 border ${
                 errors.username ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
               } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-base sm:text-sm`}
-              placeholder="Enter your username"
+              placeholder="Введите имя пользователя"
               maxLength={20}
               disabled={isLoading}
             />
@@ -91,7 +91,7 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Password
+              Пароль
             </label>
             <div className="relative">
               <input
@@ -104,7 +104,7 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
                 className={`relative block w-full px-3 py-3 sm:py-2 pr-10 border ${
                   errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                 } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-base sm:text-sm`}
-                placeholder="Enter your password"
+                placeholder="Введите пароль"
                 disabled={isLoading}
               />
               <button
@@ -126,7 +126,7 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
 
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Confirm Password
+              Подтверждение пароля
             </label>
             <div className="relative">
               <input
@@ -139,7 +139,7 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
                 className={`relative block w-full px-3 py-3 sm:py-2 pr-10 border ${
                   errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                 } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-base sm:text-sm`}
-                placeholder="Confirm your password"
+                placeholder="Подтвердите пароль"
                 disabled={isLoading}
               />
               <button
@@ -168,10 +168,10 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
               {isLoading ? (
                 <div className="flex items-center">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Creating Account...
+                  Создание аккаунта...
                 </div>
               ) : (
-                'Create Account'
+                'Создать аккаунт'
               )}
             </button>
           </div>
@@ -179,12 +179,12 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
 
         <div className="text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Already have an account?{' '}
+            Уже есть аккаунт?{' '}
             <button
               onClick={onSwitchToLogin}
               className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
             >
-              Sign in
+              Войти
             </button>
           </p>
         </div>

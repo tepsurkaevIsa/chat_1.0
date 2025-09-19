@@ -21,8 +21,8 @@ export function TypingIndicator({ users, currentUserId }: TypingIndicatorProps) 
       </div>
       <span>
         {typingUsers.length === 1 
-          ? `${typingUsers[0].username} is typing...`
-          : `${typingUsers.length} people are typing...`
+          ? `${typingUsers[0].username} печатает...`
+          : `${typingUsers.length} человек печатают...`
         }
       </span>
     </div>
