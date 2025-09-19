@@ -144,9 +144,7 @@ export function LoginForm({ onLogin, onSwitchToRegister, isLoading }: LoginFormP
               Зарегистрироваться
             </button>
           </p>
-          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-            Демо-пользователи: Alice, Bob, Charlie, Diana, Eve
-          </p>
+          
         </div>
       </div>
     </div>
