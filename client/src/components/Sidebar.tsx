@@ -23,7 +23,7 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               {currentUser.username}
             </h2>
-            <p className="text-sm text-green-500">Online</p>
+            <p className="text-sm text-green-500">В сети</p>
           </div>
           {/* Close button for mobile */}
           <button className="lg:hidden p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
@@ -40,7 +40,7 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
           <div className="flex items-center space-x-2 mb-4">
             <Users className="w-5 h-5 text-gray-500 dark:text-gray-400" />
             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-              Users
+              Пользователи
             </h3>
           </div>
           
@@ -73,7 +73,7 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
                     )}
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {user.isOnline ? 'Online' : 'Offline'}
+                    {user.isOnline ? 'В сети' : 'Не в сети'}
                   </p>
                 </div>
                 <MessageCircle className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />

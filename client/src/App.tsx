@@ -54,7 +54,7 @@ function App() {
       setChatState(prev => ({ ...prev, users }));
     } catch (error) {
       console.error('Error loading users:', error);
-      setError('Failed to load users');
+      setError('Не удалось загрузить пользователей');
     }
   };
 
@@ -80,7 +80,7 @@ function App() {
       
     } catch (error) {
       console.error('Login error:', error);
-      setError(error instanceof Error ? error.message : 'Login failed');
+      setError(error instanceof Error ? error.message : 'Ошибка входа');
     } finally {
       setIsLoading(false);
     }
@@ -108,7 +108,7 @@ function App() {
       
     } catch (error) {
       console.error('Registration error:', error);
-      setError(error instanceof Error ? error.message : 'Registration failed');
+      setError(error instanceof Error ? error.message : 'Ошибка регистрации');
     } finally {
       setIsLoading(false);
     }
@@ -141,7 +141,7 @@ function App() {
       setChatState(prev => ({ ...prev, messages }));
     } catch (error) {
       console.error('Error loading messages:', error);
-      setError('Failed to load messages');
+      setError('Не удалось загрузить сообщения');
     }
   };
 
@@ -167,7 +167,7 @@ function App() {
 
     const handleError = (error: any) => {
       console.error('Socket error:', error);
-      setError('Connection error');
+      setError('Ошибка подключения');
     };
 
     const handleMessage = (message: Message) => {
@@ -258,7 +258,7 @@ function App() {
             onClick={() => setError(null)}
             className="ml-4 underline"
           >
-            Dismiss
+            Закрыть
           </button>
         </div>
       )}
@@ -309,7 +309,7 @@ function App() {
       <div className="fixed bottom-4 right-4 z-20">
         <div className={`w-3 h-3 rounded-full ${
           chatState.isConnected ? 'bg-green-500' : 'bg-red-500'
-        }`} title={chatState.isConnected ? 'Connected' : 'Disconnected'} />
+        }`} title={chatState.isConnected ? 'Подключено' : 'Отключено'} />
       </div>
     </div>
   );

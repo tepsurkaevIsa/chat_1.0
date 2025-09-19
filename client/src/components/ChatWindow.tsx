@@ -105,16 +105,16 @@ export function ChatWindow({
             <Send className="w-8 h-8 text-gray-400" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-            Select a user to start chatting
+            Выберите собеседника, чтобы начать чат
           </h3>
           <p className="text-gray-500 dark:text-gray-400 mb-4">
-            Choose someone from the sidebar to begin your conversation
+            Выберите кого-нибудь в боковой панели, чтобы начать разговор
           </p>
           <button
             onClick={onMenuToggle}
             className="lg:hidden px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
           >
-            Open Users List
+            Открыть список пользователей
           </button>
         </div>
       </div>
@@ -152,7 +152,7 @@ export function ChatWindow({
               {otherUser.username}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {otherUser.isOnline ? 'Online' : 'Offline'}
+              {otherUser.isOnline ? 'В сети' : 'Не в сети'}
             </p>
           </div>
           <button
@@ -170,7 +170,7 @@ export function ChatWindow({
       <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 dark:text-gray-400 mt-8 px-4">
-            <p>No messages yet. Start the conversation!</p>
+            <p>Пока нет сообщений. Начните разговор!</p>
           </div>
         ) : (
           messages.map((message) => (
@@ -200,7 +200,7 @@ export function ChatWindow({
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type a message..."
+          placeholder="Введите сообщение..."
             className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             disabled={!otherUser}
           />
