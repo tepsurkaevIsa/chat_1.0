@@ -27,8 +27,8 @@ npm run dev
 ## Тестирование
 
 1. Откройте браузер и перейдите на http://localhost:3000
-2. Введите имя пользователя (например, "Alice")
-3. Выберите другого пользователя из списка для начала чата
+2. Зарегистрируйтесь или войдите с логином и паролем
+3. Выберите пользователя из списка для начала чата
 4. Отправьте сообщение
 
 ## Демо пользователи
@@ -47,11 +47,18 @@ npm run dev
 curl http://localhost:3001/health
 ```
 
-### Аутентификация
+### Регистрация
 ```bash
-curl -X POST http://localhost:3001/auth/guest \
+curl -X POST http://localhost:3001/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"username":"TestUser"}'
+  -d '{"username":"testuser","password":"password123"}'
+```
+
+### Вход
+```bash
+curl -X POST http://localhost:3001/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","password":"password123"}'
 ```
 
 ### Список пользователей
