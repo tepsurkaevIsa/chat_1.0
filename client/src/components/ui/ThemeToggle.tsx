@@ -1,5 +1,6 @@
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
+import styles from './ThemeToggle.module.css';
 
 interface ThemeToggleProps {
   className?: string;
@@ -14,12 +15,12 @@ export function ThemeToggle({ className = '' }: ThemeToggleProps) {
       onClick={toggleTheme}
       aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
       title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
-      className={`rounded-full p-2 border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/70 backdrop-blur shadow-sm hover:bg-white dark:hover:bg-gray-800 transition-colors ${className}`}
+      className={`${styles.btn} ${className}`}
     >
       {theme === 'dark' ? (
-        <Sun className="w-5 h-5 text-yellow-400" />
+        <Sun width={20} height={20} color="#f59e0b" />
       ) : (
-        <Moon className="w-5 h-5 text-gray-700" />
+        <Moon width={20} height={20} color="#374151" />
       )}
     </button>
   );

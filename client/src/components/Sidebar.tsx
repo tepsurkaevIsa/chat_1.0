@@ -43,8 +43,8 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
               title="К чатам"
               className={`${styles.controlBtn} ${styles.desktopOnly}`}
             >
-              <MessageCircle className="w-5 h-5" />
-              <span className="text-sm">Чаты</span>
+              <MessageCircle width={20} height={20} />
+              <span className={styles.btnText}>Чаты</span>
             </button>
             <button
               onClick={() => navigate('/chats')}
@@ -52,8 +52,8 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
               title="К чатам"
               className={`${styles.controlBtn} ${styles.mobileOnly}`}
             >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="text-sm">Чаты</span>
+              <ArrowLeft width={20} height={20} />
+              <span className={styles.btnText}>Чаты</span>
             </button>
           </div>
         </div>
@@ -62,7 +62,7 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
       <div className={styles.list}>
         <div className={styles.section}>
           <div className={styles.sectionTitleRow}>
-            <Users className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <Users width={20} height={20} />
             <h3 className={styles.sectionTitle}>Пользователи</h3>
           </div>
 
@@ -77,9 +77,9 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
             />
           </div>
           
-          <div className="space-y-2">
+          <div>
             {filteredUsers.length === 0 ? (
-              <div className="text-sm text-gray-500 dark:text-gray-400">Ничего не найдено</div>
+              <div className={styles.userStatus}>Ничего не найдено</div>
             ) : (
               filteredUsers.map((user) => (
                 <button
@@ -95,7 +95,8 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
                       <div className={styles.onlineDot}></div>
                     )}
                   </div>
-                  <div className="flex-1 text-left min-w-0">
+                  <div className={styles.itemText}
+                  >
                     <div className={styles.userNameRow}>
                       <h4 className={styles.userNameText}>
                         {user.username}
