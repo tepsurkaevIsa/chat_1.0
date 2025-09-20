@@ -1,4 +1,4 @@
-import { User, Message } from './types';
+import { User, Message, ChatSummary } from './types';
 
 // In-memory storage for MVP
 class Store {
@@ -126,6 +126,45 @@ class Store {
       .filter(msg => msg.senderId === userId || msg.receiverId === userId)
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(0, limit);
+  }
+
+  getChatSummariesForUser(userId: string): ChatSummary[] {
+    // Group messages by the other participant
+    const conversationMap: Map<string, { lastMessage: Message; unreadCount: number }> = new Map();
+
+    for (const msg of this.messages) {
+      if (msg.senderId !== userId && msg.receiverId !== userId) continue;
+
+      const otherId = msg.senderId === userId ? msg.receiverId : msg.senderId;
+      const current = conversationMap.get(otherId);
+
+      const isUnreadForUser = msg.receiverId === userId && !msg.readAt;
+
+      if (!current) {
+        conversationMap.set(otherId, {
+          lastMessage: msg,
+          unreadCount: isUnreadForUser ? 1 : 0,
+        });
+      } else {
+        if (msg.createdAt > current.lastMessage.createdAt) {
+          current.lastMessage = msg;
+        }
+        if (isUnreadForUser) {
+          current.unreadCount += 1;
+        }
+      }
+    }
+
+    const summaries: ChatSummary[] = [];
+    for (const [otherId, data] of conversationMap.entries()) {
+      const otherUser = this.getUser(otherId);
+      if (!otherUser) continue;
+      summaries.push({ otherUser, lastMessage: data.lastMessage, unreadCount: data.unreadCount });
+    }
+
+    // Sort by last message time desc
+    summaries.sort((a, b) => b.lastMessage.createdAt.getTime() - a.lastMessage.createdAt.getTime());
+    return summaries;
   }
 
   markMessageAsRead(messageId: string, userId: string) {

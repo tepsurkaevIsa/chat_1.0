@@ -16,6 +16,12 @@ export interface Message {
   readAt?: Date;
 }
 
+export interface ChatSummary {
+  otherUser: User;
+  lastMessage: Message;
+  unreadCount: number;
+}
+
 export interface AuthResponse {
   token: string;
   user: User;

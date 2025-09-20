@@ -4,6 +4,7 @@ import { createServer } from 'http';
 import WebSocket from 'ws';
 import { SocketManager } from './sockets';
 import { store } from './store';
+import { ChatSummary } from './types';
 import { verifyToken, registerUser, loginUser } from './auth';
 
 const app = express();
@@ -116,9 +117,37 @@ app.get('/messages/:peerId', (req, res) => {
       messages = messages.filter(msg => msg.createdAt < before);
     }
 
+    // Mark messages as read for the authenticated user
+    messages.forEach(msg => {
+      if (msg.receiverId === userId && !msg.readAt) {
+        store.markMessageAsRead(msg.id, userId);
+      }
+    });
+
     res.json(messages);
   } catch (error) {
     console.error('Error fetching messages:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get chat summaries for the authenticated user
+app.get('/chats', (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const userId = verifyToken(token);
+    if (!userId) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    const chats: ChatSummary[] = store.getChatSummariesForUser(userId);
+    res.json(chats);
+  } catch (error) {
+    console.error('Error fetching chats:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
