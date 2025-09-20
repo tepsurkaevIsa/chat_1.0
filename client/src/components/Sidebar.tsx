@@ -1,5 +1,6 @@
+import { useMemo, useState } from 'react';
 import { User } from '../types';
-import { Users, MessageCircle } from 'lucide-react';
+import { Users, MessageCircle, Search } from 'lucide-react';
 
 interface SidebarProps {
   users: User[];
@@ -10,6 +11,12 @@ interface SidebarProps {
 
 export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }: SidebarProps) {
   const otherUsers = users.filter(user => user.id !== currentUser.id);
+  const [searchQuery, setSearchQuery] = useState('');
+  const filteredUsers = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return otherUsers;
+    return otherUsers.filter(user => user.username.toLowerCase().includes(q));
+  }, [otherUsers, searchQuery]);
 
   return (
     <div className="w-80 lg:w-80 w-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full">
@@ -43,42 +50,60 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
               Пользователи
             </h3>
           </div>
+
+          {/* Search */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="w-4 h-4 text-gray-400 dark:text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Поиск по нику..."
+                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+          </div>
           
           <div className="space-y-2">
-            {otherUsers.map((user) => (
-              <button
-                key={user.id}
-                onClick={() => onUserSelect(user.id)}
-                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                  currentChatUserId === user.id
-                    ? 'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800'
-                    : 'hover:bg-gray-50 dark:hover:bg-gray-700'
-                }`}
-              >
-                <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white font-semibold">
-                    {user.username.charAt(0).toUpperCase()}
-                  </div>
-                  {user.isOnline && (
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
-                  )}
-                </div>
-                <div className="flex-1 text-left min-w-0">
-                  <div className="flex items-center space-x-2">
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                      {user.username}
-                    </h4>
+            {filteredUsers.length === 0 ? (
+              <div className="text-sm text-gray-500 dark:text-gray-400">Ничего не найдено</div>
+            ) : (
+              filteredUsers.map((user) => (
+                <button
+                  key={user.id}
+                  onClick={() => onUserSelect(user.id)}
+                  className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+                    currentChatUserId === user.id
+                      ? 'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800'
+                      : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <div className="relative">
+                    <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white font-semibold">
+                      {user.username.charAt(0).toUpperCase()}
+                    </div>
                     {user.isOnline && (
-                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {user.isOnline ? 'В сети' : 'Не в сети'}
-                  </p>
-                </div>
-                <MessageCircle className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
-              </button>
-            ))}
+                  <div className="flex-1 text-left min-w-0">
+                    <div className="flex items-center space-x-2">
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        {user.username}
+                      </h4>
+                      {user.isOnline && (
+                        <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {user.isOnline ? 'В сети' : 'Не в сети'}
+                    </p>
+                  </div>
+                  <MessageCircle className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                </button>
+              ))
+            )}
           </div>
         </div>
       </div>
