@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { Users, MessageCircle, Search, ArrowLeft } from 'lucide-react';
+import styles from './Sidebar.module.css';
 import { ThemeToggle } from './ui/ThemeToggle';
 
 interface SidebarProps {
@@ -22,68 +23,58 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
   }, [otherUsers, searchQuery]);
 
   return (
-    <div className="w-80 lg:w-80 w-full bg-white/80 dark:bg-gray-900/70 border-r border-gray-200 dark:border-gray-800 flex flex-col h-full backdrop-blur">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-800">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center text-white font-semibold shadow-sm">
+    <div className={styles.root}>
+      <div className={styles.header}>
+        <div className={styles.headerRow}>
+          <div className={styles.avatar}>
             {currentUser.username.charAt(0).toUpperCase()}
           </div>
-          <div className="flex-1">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {currentUser.username}
-            </h2>
-            <p className="text-sm text-green-500">В сети</p>
+          <div className={styles.userBlock}>
+            <h2 className={styles.userName}>{currentUser.username}</h2>
+            <p className={styles.online}>В сети</p>
           </div>
-          {/* Mobile controls */}
-          <div className="flex items-center space-x-2">
-            <div className="lg:hidden">
+          <div className={styles.controls}>
+            <div className={styles.mobileOnly}>
               <ThemeToggle />
             </div>
             <button
               onClick={() => navigate('/chats')}
               aria-label="К чатам"
               title="К чатам"
-              className="hidden lg:flex items-center space-x-1 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+              className={`${styles.controlBtn} ${styles.desktopOnly}`}
             >
               <MessageCircle className="w-5 h-5" />
-              <span className="text-sm text-gray-700 dark:text-gray-200">Чаты</span>
+              <span className="text-sm">Чаты</span>
             </button>
             <button
               onClick={() => navigate('/chats')}
               aria-label="К чатам"
               title="К чатам"
-              className="lg:hidden flex items-center space-x-1 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+              className={`${styles.controlBtn} ${styles.mobileOnly}`}
             >
               <ArrowLeft className="w-5 h-5" />
-              <span className="text-sm text-gray-700 dark:text-gray-200">Чаты</span>
+              <span className="text-sm">Чаты</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Users List */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-4">
-          <div className="flex items-center space-x-2 mb-4">
+      <div className={styles.list}>
+        <div className={styles.section}>
+          <div className={styles.sectionTitleRow}>
             <Users className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-              Пользователи
-            </h3>
+            <h3 className={styles.sectionTitle}>Пользователи</h3>
           </div>
 
-          {/* Search */}
-          <div className="mb-4">
-            <div className="relative">
-              <Search className="w-4 h-4 text-gray-400 dark:text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Поиск по нику..."
-                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white/70 dark:bg-gray-800/70 dark:text-white"
-              />
-            </div>
+          <div className={styles.search}>
+            <Search className={styles.searchIcon} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Поиск по нику..."
+              className={styles.searchInput}
+            />
           </div>
           
           <div className="space-y-2">
@@ -94,34 +85,30 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
                 <button
                   key={user.id}
                   onClick={() => onUserSelect(user.id)}
-                  className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                    currentChatUserId === user.id
-                      ? 'bg-primary-50/80 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800'
-                      : 'hover:bg-gray-50/70 dark:hover:bg-gray-800/60'
-                  }`}
+                  className={`${styles.userItem} ${currentChatUserId === user.id ? styles.userItemActive : ''}`}
                 >
-                  <div className="relative">
-                    <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-700 flex items-center justify-center text-white font-semibold">
+                  <div className={styles.userAvatarWrap}>
+                    <div className={styles.userAvatar}>
                       {user.username.charAt(0).toUpperCase()}
                     </div>
                     {user.isOnline && (
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
+                      <div className={styles.onlineDot}></div>
                     )}
                   </div>
                   <div className="flex-1 text-left min-w-0">
-                    <div className="flex items-center space-x-2">
-                      <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <div className={styles.userNameRow}>
+                      <h4 className={styles.userNameText}>
                         {user.username}
                       </h4>
                       {user.isOnline && (
-                        <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                        <div className={styles.userNameDot}></div>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className={styles.userStatus}>
                       {user.isOnline ? 'В сети' : 'Не в сети'}
                     </p>
                   </div>
-                  <MessageCircle className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                  <MessageCircle className={styles.msgIcon} />
                 </button>
               ))
             )}
