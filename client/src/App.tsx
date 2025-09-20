@@ -6,6 +6,7 @@ import { LoginForm } from './components/LoginForm';
 import { RegisterForm } from './components/RegisterForm';
 import { Sidebar } from './components/Sidebar';
 import { ChatWindow } from './components/ChatWindow';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 function App() {
   const [chatState, setChatState] = useState<ChatState>({
@@ -18,8 +19,11 @@ function App() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [isMobile, setIsMobile] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Initialize app
   useEffect(() => {
@@ -47,6 +51,14 @@ function App() {
       loadUsers();
     }
   }, [chatState.currentUser, chatState.isConnected]);
+
+  // Track viewport to determine mobile vs desktop (Tailwind lg breakpoint = 1024px)
+  useEffect(() => {
+    const updateIsMobile = () => setIsMobile(window.innerWidth < 1024);
+    updateIsMobile();
+    window.addEventListener('resize', updateIsMobile);
+    return () => window.removeEventListener('resize', updateIsMobile);
+  }, []);
 
   const loadUsers = async () => {
     try {
@@ -133,7 +145,6 @@ function App() {
     if (chatState.currentChatUserId === userId) return;
 
     setChatState(prev => ({ ...prev, currentChatUserId: userId, messages: [] }));
-    setIsMobileMenuOpen(false); // Close mobile menu when user is selected
 
     try {
       // Load messages for this conversation
@@ -147,12 +158,35 @@ function App() {
 
   const handleBack = () => {
     setChatState(prev => ({ ...prev, currentChatUserId: null, messages: [] }));
-    setIsMobileMenuOpen(false);
+    navigate('/users');
   };
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+  // Extract chat id from route
+  const chatIdFromPath = location.pathname.startsWith('/chat/')
+    ? location.pathname.slice('/chat/'.length)
+    : null;
+
+  // Keep state in sync with route: when /chat/:id changes, load that conversation
+  useEffect(() => {
+    if (!chatIdFromPath) return;
+    if (chatState.currentChatUserId !== chatIdFromPath) {
+      handleUserSelect(chatIdFromPath);
+    }
+  }, [chatIdFromPath]);
+
+  // On mobile, ensure root routes go to /users; also clear selection on /users
+  useEffect(() => {
+    if (isMobile && (location.pathname === '/' || location.pathname === '')) {
+      navigate('/users', { replace: true });
+    }
+    if (isMobile && location.pathname === '/users') {
+      setChatState(prev => ({ ...prev, currentChatUserId: null, messages: [] }));
+    }
+    if (!isMobile && location.pathname === '/users') {
+      // If resized to desktop while on /users, keep the layout root
+      navigate('/', { replace: true });
+    }
+  }, [isMobile, location.pathname]);
 
   // WebSocket event handlers
   useEffect(() => {
@@ -250,7 +284,6 @@ function App() {
 
   return (
     <div className="h-screen bg-gray-50 dark:bg-gray-900 flex relative safe-area-inset-top safe-area-inset-bottom">
-      {/* Error banner */}
       {error && (
         <div className="fixed top-0 left-0 right-0 bg-red-500 text-white p-2 text-center z-50">
           {error}
@@ -263,49 +296,61 @@ function App() {
         </div>
       )}
 
-      {/* Mobile menu button */}
-      <button
-        onClick={toggleMobileMenu}
-        className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-
-      {/* Mobile overlay */}
-      {isMobileMenuOpen && (
-        <div 
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
+      {isMobile ? (
+        // Mobile: use routes as separate pages
+        <div className="flex-1 flex flex-col w-full h-full">
+          <Routes>
+            <Route
+              path="/users"
+              element={
+                <Sidebar
+                  users={chatState.users}
+                  currentUser={chatState.currentUser}
+                  currentChatUserId={chatState.currentChatUserId}
+                  onUserSelect={(userId) => navigate(`/chat/${userId}`)}
+                />
+              }
+            />
+            <Route
+              path="/chat/:id"
+              element={
+                <ChatWindow
+                  currentUser={chatState.currentUser}
+                  otherUser={currentChatUser || null}
+                  messages={chatState.messages}
+                  typingUsers={chatState.typingUsers}
+                  onBack={handleBack}
+                  onMenuToggle={() => navigate('/users')}
+                />
+              }
+            />
+            <Route path="*" element={<Navigate to="/users" replace />} />
+          </Routes>
+        </div>
+      ) : (
+        // Desktop: classic split view with persistent sidebar
+        <>
+          <div className="hidden lg:block lg:w-80 flex-shrink-0 border-r border-gray-200 dark:border-gray-700">
+            <Sidebar
+              users={chatState.users}
+              currentUser={chatState.currentUser}
+              currentChatUserId={chatState.currentChatUserId}
+              onUserSelect={(userId) => navigate(`/chat/${userId}`)}
+            />
+          </div>
+          <div className="flex-1 flex flex-col">
+            <ChatWindow
+              currentUser={chatState.currentUser}
+              otherUser={currentChatUser || null}
+              messages={chatState.messages}
+              typingUsers={chatState.typingUsers}
+              onBack={() => {}}
+              onMenuToggle={() => {}}
+            />
+          </div>
+        </>
       )}
 
-      {/* Sidebar */}
-      <div className={`lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out ${
-        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40`}>
-        <Sidebar
-          users={chatState.users}
-          currentUser={chatState.currentUser}
-          currentChatUserId={chatState.currentChatUserId}
-          onUserSelect={handleUserSelect}
-        />
-      </div>
-
-      {/* Chat Window */}
-      <div className="flex-1 flex flex-col lg:flex-row">
-        <ChatWindow
-          currentUser={chatState.currentUser}
-          otherUser={currentChatUser || null}
-          messages={chatState.messages}
-          typingUsers={chatState.typingUsers}
-          onBack={handleBack}
-          onMenuToggle={toggleMobileMenu}
-        />
-      </div>
-
-      {/* Connection status indicator */}
       <div className="fixed bottom-4 right-4 z-20">
         <div className={`w-3 h-3 rounded-full ${
           chatState.isConnected ? 'bg-green-500' : 'bg-red-500'
