@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../types';
-import { Users, MessageCircle, Search } from 'lucide-react';
+import { Users, MessageCircle, Search, ArrowLeft } from 'lucide-react';
 import { ThemeToggle } from './ui/ThemeToggle';
 
 interface SidebarProps {
@@ -42,13 +42,12 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
             </div>
             <button
               onClick={() => navigate('/chats')}
-              aria-label="Назад к чатам"
-              title="Назад к чатам"
-              className="lg:hidden p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+              aria-label="К чатам"
+              title="К чатам"
+              className="lg:hidden flex items-center space-x-1 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <ArrowLeft className="w-5 h-5" />
+              <span className="text-sm text-gray-700 dark:text-gray-200">Чаты</span>
             </button>
           </div>
         </div>
