@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { Users, MessageCircle, Search } from 'lucide-react';
+import { ThemeToggle } from './ui/ThemeToggle';
 
 interface SidebarProps {
   users: User[];
@@ -10,6 +12,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }: SidebarProps) {
+  const navigate = useNavigate();
   const otherUsers = users.filter(user => user.id !== currentUser.id);
   const [searchQuery, setSearchQuery] = useState('');
   const filteredUsers = useMemo(() => {
@@ -32,12 +35,22 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
             </h2>
             <p className="text-sm text-green-500">В сети</p>
           </div>
-          {/* Close button for mobile */}
-          <button className="lg:hidden p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          {/* Mobile controls */}
+          <div className="flex items-center space-x-2">
+            <div className="lg:hidden">
+              <ThemeToggle />
+            </div>
+            <button
+              onClick={() => navigate('/chats')}
+              aria-label="Назад к чатам"
+              title="Назад к чатам"
+              className="lg:hidden p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
