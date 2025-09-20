@@ -7,6 +7,7 @@ import { RegisterForm } from './components/RegisterForm';
 import { Sidebar } from './components/Sidebar';
 import { ChatWindow } from './components/ChatWindow';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { ThemeToggle } from './components/ui/ThemeToggle';
 
 function App() {
   const [chatState, setChatState] = useState<ChatState>({
@@ -283,7 +284,7 @@ function App() {
   const currentChatUser = chatState.users.find(user => user.id === chatState.currentChatUserId);
 
   return (
-    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex relative safe-area-inset-top safe-area-inset-bottom">
+    <div className="h-screen bg-gray-100 dark:bg-gray-950 flex relative safe-area-inset-top safe-area-inset-bottom">
       {error && (
         <div className="fixed top-0 left-0 right-0 bg-red-500 text-white p-2 text-center z-50">
           {error}
@@ -295,6 +296,11 @@ function App() {
           </button>
         </div>
       )}
+
+      {/* Theme toggle */}
+      <div className="absolute top-3 right-3 z-30">
+        <ThemeToggle />
+      </div>
 
       {isMobile ? (
         // Mobile: use routes as separate pages
@@ -330,7 +336,7 @@ function App() {
       ) : (
         // Desktop: classic split view with persistent sidebar
         <>
-          <div className="hidden lg:block lg:w-80 flex-shrink-0 border-r border-gray-200 dark:border-gray-700">
+          <div className="hidden lg:block lg:w-80 flex-shrink-0 border-r border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/60 backdrop-blur">
             <Sidebar
               users={chatState.users}
               currentUser={chatState.currentUser}
