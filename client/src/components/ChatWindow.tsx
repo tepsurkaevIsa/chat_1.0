@@ -127,11 +127,11 @@ export function ChatWindow({
 
   return (
     <div 
-      className="flex-1 flex flex-col bg-white dark:bg-gray-900 h-full"
+      className="flex-1 flex flex-col bg-white/80 dark:bg-gray-950 h-full backdrop-blur"
       {...swipeHandlers}
     >
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 flex-shrink-0 backdrop-blur">
         <div className="flex items-center space-x-3">
           <button
             onClick={onBack}
@@ -140,7 +140,7 @@ export function ChatWindow({
             <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </button>
           <div className="relative">
-            <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white font-semibold">
+            <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-700 flex items-center justify-center text-white font-semibold">
               {otherUser.username.charAt(0).toUpperCase()}
             </div>
             {otherUser.isOnline && (
@@ -193,7 +193,7 @@ export function ChatWindow({
       </div>
 
       {/* Message input */}
-      <div className="p-2 sm:p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
+      <div className="p-2 sm:p-4 border-t border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 flex-shrink-0 backdrop-blur">
         <form onSubmit={handleSendMessage} className="flex space-x-2">
           <input
             type="text"
@@ -201,13 +201,13 @@ export function ChatWindow({
             onChange={(e) => setMessageText(e.target.value)}
             onKeyPress={handleKeyPress}
           placeholder="Введите сообщение..."
-            className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white/80 dark:bg-gray-800/80 dark:text-white"
             disabled={!otherUser}
           />
           <button
             type="submit"
             disabled={!messageText.trim() || !otherUser}
-            className="px-3 sm:px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+            className="px-3 sm:px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0 shadow-sm"
           >
             <Send className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>

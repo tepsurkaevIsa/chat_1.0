@@ -19,11 +19,11 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
   }, [otherUsers, searchQuery]);
 
   return (
-    <div className="w-80 lg:w-80 w-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col h-full">
+    <div className="w-80 lg:w-80 w-full bg-white/80 dark:bg-gray-900/70 border-r border-gray-200 dark:border-gray-800 flex flex-col h-full backdrop-blur">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold">
+          <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center text-white font-semibold shadow-sm">
             {currentUser.username.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1">
@@ -60,7 +60,7 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Поиск по нику..."
-                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white/70 dark:bg-gray-800/70 dark:text-white"
               />
             </div>
           </div>
@@ -75,12 +75,12 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
                   onClick={() => onUserSelect(user.id)}
                   className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
                     currentChatUserId === user.id
-                      ? 'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800'
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                      ? 'bg-primary-50/80 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800'
+                      : 'hover:bg-gray-50/70 dark:hover:bg-gray-800/60'
                   }`}
                 >
                   <div className="relative">
-                    <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white font-semibold">
+                    <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-700 flex items-center justify-center text-white font-semibold">
                       {user.username.charAt(0).toUpperCase()}
                     </div>
                     {user.isOnline && (

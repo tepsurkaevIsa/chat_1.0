@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MessageCircle, Eye, EyeOff } from 'lucide-react';
+import { ThemeToggle } from './ui/ThemeToggle';
 
 interface RegisterFormProps {
   onRegister: (username: string, password: string) => void;
@@ -51,10 +52,13 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center p-4 relative">
+      <div className="absolute top-3 right-3">
+        <ThemeToggle />
+      </div>
       <div className="max-w-md w-full space-y-6 sm:space-y-8 p-4 sm:p-8">
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 sm:h-16 sm:w-16 bg-primary-500 rounded-full flex items-center justify-center">
+          <div className="mx-auto h-12 w-12 sm:h-16 sm:w-16 bg-primary-600 rounded-full flex items-center justify-center shadow-sm">
             <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
           </div>
           <h2 className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
@@ -78,8 +82,8 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className={`relative block w-full px-3 py-3 sm:py-2 border ${
-                errors.username ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-              } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-base sm:text-sm`}
+                errors.username ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+              } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white/80 dark:bg-gray-900/60 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-base sm:text-sm backdrop-blur`}
               placeholder="Введите имя пользователя"
               maxLength={20}
               disabled={isLoading}
@@ -102,8 +106,8 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={`relative block w-full px-3 py-3 sm:py-2 pr-10 border ${
-                  errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-base sm:text-sm`}
+                  errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white/80 dark:bg-gray-900/60 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-base sm:text-sm backdrop-blur`}
                 placeholder="Введите пароль"
                 disabled={isLoading}
               />
@@ -137,8 +141,8 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className={`relative block w-full px-3 py-3 sm:py-2 pr-10 border ${
-                  errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-base sm:text-sm`}
+                  errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white/80 dark:bg-gray-900/60 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 text-base sm:text-sm backdrop-blur`}
                 placeholder="Подтвердите пароль"
                 disabled={isLoading}
               />
@@ -163,7 +167,7 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-3 sm:py-2 px-4 border border-transparent text-base sm:text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-3 sm:py-2 px-4 border border-transparent text-base sm:text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed shadow"
             >
               {isLoading ? (
                 <div className="flex items-center">

@@ -1,6 +1,5 @@
 import { User, Message, AuthResponse } from '../types';
-
-const API_BASE_URL = '/api';
+import { API_BASE_URL } from '../config';
 
 class ApiClient {
   private token: string | null = null;

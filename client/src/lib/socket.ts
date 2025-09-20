@@ -1,4 +1,5 @@
 import { WebSocketMessage, TypingData } from '../types';
+import { WS_URL } from '../config';
 
 class SocketClient {
   private ws: WebSocket | null = null;
@@ -18,7 +19,8 @@ class SocketClient {
       throw new Error('Token is required to connect');
     }
 
-    const wsUrl = `ws://localhost:3001?token=${this.token}`;
+    const separator = WS_URL.includes('?') ? '&' : '?';
+    const wsUrl = `${WS_URL}${separator}token=${this.token}`;
     this.ws = new WebSocket(wsUrl);
 
     this.ws.onopen = () => {
