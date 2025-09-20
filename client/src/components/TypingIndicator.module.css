@@ -1,0 +1,11 @@
+.root { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; font-size: 0.875rem; color: var(--color-text); }
+.dots { display: flex; gap: 0.25rem; }
+.dot { width: 0.5rem; height: 0.5rem; background: #9ca3af; border-radius: 9999px; animation: bounce 1s infinite ease-in-out; }
+.dot2 { animation-delay: 0.1s; }
+.dot3 { animation-delay: 0.2s; }
+
+@keyframes bounce {
+	0%, 80%, 100% { transform: translateY(0); opacity: 0.7; }
+	40% { transform: translateY(-4px); opacity: 1; }
+}
+

@@ -6,6 +6,7 @@ import { Send, ArrowLeft } from 'lucide-react';
 import { socketClient } from '../lib/socket';
 import { useSwipe } from '../hooks/useSwipe';
 import { ThemeToggle } from './ui/ThemeToggle';
+import styles from './ChatWindow.module.css';
 
 interface ChatWindowProps {
   currentUser: User;
@@ -100,20 +101,20 @@ export function ChatWindow({
 
   if (!otherUser) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center p-4">
-          <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Send className="w-8 h-8 text-gray-400" />
+      <div className={`${styles.root} ${styles.emptyWrap}`}>
+        <div className={styles.emptyInner}>
+          <div className={styles.emptyIconWrap}>
+            <Send width={32} height={32} color="#9ca3af" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+          <h3 className={styles.emptyTitle}>
             Выберите собеседника, чтобы начать чат
           </h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">
+          <p className={styles.emptyText}>
             Выберите кого-нибудь в боковой панели, чтобы начать разговор
           </p>
           <button
             onClick={onMenuToggle}
-            className="lg:hidden px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+            className={styles.emptyBtn}
           >
             Открыть список пользователей
           </button>
@@ -127,55 +128,36 @@ export function ChatWindow({
     .filter(user => user.id !== currentUser.id);
 
   return (
-    <div 
-      className="flex-1 flex flex-col bg-white/80 dark:bg-gray-950 h-full backdrop-blur"
-      {...swipeHandlers}
-    >
-      {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 flex-shrink-0 backdrop-blur">
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={onBack}
-            className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-          >
-            <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+    <div className={styles.root} {...swipeHandlers}>
+      <div className={styles.header}>
+        <div className={styles.headerRow}>
+          <button onClick={onBack} className={`${styles.backBtn} ${styles.mobileOnly}`}>
+            <ArrowLeft width={20} height={20} />
           </button>
-          <div className="relative">
-            <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-700 flex items-center justify-center text-white font-semibold">
+          <div className={styles.avatarWrap}>
+            <div className={styles.avatar}>
               {otherUser.username.charAt(0).toUpperCase()}
             </div>
-            {otherUser.isOnline && (
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
-            )}
+            {otherUser.isOnline && <div className={styles.onlineDot}></div>}
           </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-              {otherUser.username}
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {otherUser.isOnline ? 'В сети' : 'Не в сети'}
-            </p>
+          <div className={styles.titleWrap}>
+            <h2 className={styles.title}>{otherUser.username}</h2>
+            <p className={styles.subtitle}>{otherUser.isOnline ? 'В сети' : 'Не в сети'}</p>
           </div>
-          <div className="lg:hidden">
+          <div className={styles.mobileOnly}>
             <ThemeToggle />
           </div>
-          <button
-            onClick={onMenuToggle}
-            className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button onClick={onMenuToggle} className={`${styles.menuBtn} ${styles.mobileOnly}`} aria-label="Меню">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
+      <div className={styles.messages}>
         {messages.length === 0 ? (
-          <div className="text-center text-gray-500 dark:text-gray-400 mt-8 px-4">
-            <p>Пока нет сообщений. Начните разговор!</p>
-          </div>
+          <div className={styles.empty}>Пока нет сообщений. Начните разговор!</div>
         ) : (
           messages.map((message) => (
             <Message
@@ -186,34 +168,24 @@ export function ChatWindow({
             />
           ))
         )}
-        
-        {/* Typing indicator */}
-        <TypingIndicator 
-          users={typingUsersList} 
-          currentUserId={currentUser.id} 
-        />
-        
+
+        <TypingIndicator users={typingUsersList} currentUserId={currentUser.id} />
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Message input */}
-      <div className="p-2 sm:p-4 border-t border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 flex-shrink-0 backdrop-blur">
-        <form onSubmit={handleSendMessage} className="flex space-x-2">
+      <div className={styles.inputBar}>
+        <form onSubmit={handleSendMessage} className={styles.form}>
           <input
             type="text"
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             onKeyPress={handleKeyPress}
-          placeholder="Введите сообщение..."
-            className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white/80 dark:bg-gray-800/80 dark:text-white"
+            placeholder="Введите сообщение..."
+            className={styles.textInput}
             disabled={!otherUser}
           />
-          <button
-            type="submit"
-            disabled={!messageText.trim() || !otherUser}
-            className="px-3 sm:px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0 shadow-sm"
-          >
-            <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+          <button type="submit" disabled={!messageText.trim() || !otherUser} className={styles.sendBtn} aria-label="Отправить">
+            <Send width={20} height={20} />
           </button>
         </form>
       </div>

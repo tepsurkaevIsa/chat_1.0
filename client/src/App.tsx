@@ -9,6 +9,7 @@ import { ChatWindow } from './components/ChatWindow';
 import { ChatsSidebar } from './components/ChatsSidebar';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { ThemeToggle } from './components/ui/ThemeToggle';
+import styles from './components/App.module.css';
 
 function App() {
   const [chatState, setChatState] = useState<ChatState>({
@@ -314,13 +315,13 @@ function App() {
   const currentChatUser = chatState.users.find(user => user.id === chatState.currentChatUserId);
 
   return (
-    <div className="h-screen bg-gray-100 dark:bg-gray-950 flex relative safe-area-inset-top safe-area-inset-bottom">
+    <div className={styles.root}>
       {error && (
-        <div className="fixed top-0 left-0 right-0 bg-red-500 text-white p-2 text-center z-50">
+        <div className={styles.errorBar}>
           {error}
           <button 
             onClick={() => setError(null)}
-            className="ml-4 underline"
+            className={styles.errorCloseBtn}
           >
             Закрыть
           </button>
@@ -328,13 +329,13 @@ function App() {
       )}
 
       {/* Theme toggle */}
-      <div className="absolute top-3 right-3 z-30 hidden lg:block">
+      <div className={styles.themeToggleDesktop}>
         <ThemeToggle />
       </div>
 
       {isMobile ? (
         // Mobile: use routes as separate pages
-        <div className="flex-1 flex flex-col w-full h-full">
+        <div className={styles.mobilePage}>
           <Routes>
             <Route
               path="/chats"
@@ -378,7 +379,7 @@ function App() {
       ) : (
         // Desktop: split view; left pane switches between chats and users by route
         <>
-          <div className="hidden lg:block lg:w-80 flex-shrink-0 border-r border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/60 backdrop-blur">
+          <div className={styles.leftPane}>
             <Routes>
               <Route
                 path="/users"
@@ -405,7 +406,7 @@ function App() {
               />
             </Routes>
           </div>
-          <div className="flex-1 flex flex-col">
+          <div className={styles.content}>
             <ChatWindow
               currentUser={chatState.currentUser!}
               otherUser={currentChatUser || null}
@@ -418,10 +419,11 @@ function App() {
         </>
       )}
 
-      <div className="fixed bottom-4 right-4 z-20">
-        <div className={`w-3 h-3 rounded-full ${
-          chatState.isConnected ? 'bg-green-500' : 'bg-red-500'
-        }`} title={chatState.isConnected ? 'Подключено' : 'Отключено'} />
+      <div className={styles.statusWrap}>
+        <div
+          className={`${styles.statusDot} ${chatState.isConnected ? styles.online : styles.offline}`}
+          title={chatState.isConnected ? 'Подключено' : 'Отключено'}
+        />
       </div>
     </div>
   );
