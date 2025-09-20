@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ChatSummary, User } from '../types';
 import { Plus, Users, Search } from 'lucide-react';
+import { ThemeToggle } from './ui/ThemeToggle';
 
 interface ChatsSidebarProps {
   chats: ChatSummary[];
@@ -31,10 +32,15 @@ export function ChatsSidebar({ chats, currentUser, currentChatUserId, onChatSele
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{currentUser.username}</h2>
             <p className="text-sm text-green-500">В сети</p>
           </div>
-          <button onClick={onNewChat} className="px-2 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 flex items-center space-x-1">
-            <Plus className="w-4 h-4" />
-            <Users className="w-4 h-4" />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button onClick={onNewChat} className="px-2 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 flex items-center space-x-1">
+              <Plus className="w-4 h-4" />
+              <Users className="w-4 h-4" />
+            </button>
+            <div className="lg:hidden">
+              <ThemeToggle />
+            </div>
+          </div>
         </div>
       </div>
 

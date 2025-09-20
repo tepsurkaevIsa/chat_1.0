@@ -5,6 +5,7 @@ import { TypingIndicator } from './TypingIndicator';
 import { Send, ArrowLeft } from 'lucide-react';
 import { socketClient } from '../lib/socket';
 import { useSwipe } from '../hooks/useSwipe';
+import { ThemeToggle } from './ui/ThemeToggle';
 
 interface ChatWindowProps {
   currentUser: User;
@@ -154,6 +155,9 @@ export function ChatWindow({
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {otherUser.isOnline ? 'В сети' : 'Не в сети'}
             </p>
+          </div>
+          <div className="lg:hidden">
+            <ThemeToggle />
           </div>
           <button
             onClick={onMenuToggle}
