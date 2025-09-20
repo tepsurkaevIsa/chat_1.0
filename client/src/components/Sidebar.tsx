@@ -44,6 +44,15 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
               onClick={() => navigate('/chats')}
               aria-label="К чатам"
               title="К чатам"
+              className="hidden lg:flex items-center space-x-1 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span className="text-sm text-gray-700 dark:text-gray-200">Чаты</span>
+            </button>
+            <button
+              onClick={() => navigate('/chats')}
+              aria-label="К чатам"
+              title="К чатам"
               className="lg:hidden flex items-center space-x-1 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
             >
               <ArrowLeft className="w-5 h-5" />
