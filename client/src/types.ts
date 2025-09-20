@@ -54,3 +54,9 @@ export interface ChatState {
   isConnected: boolean;
   typingUsers: Set<string>;
 }
+
+export interface ChatSummary {
+  otherUser: User;
+  lastMessage: Message;
+  unreadCount: number;
+}

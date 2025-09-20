@@ -115,6 +115,41 @@ class Store {
             .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
             .slice(0, limit);
     }
+    getChatSummariesForUser(userId) {
+        // Group messages by the other participant
+        const conversationMap = new Map();
+        for (const msg of this.messages) {
+            if (msg.senderId !== userId && msg.receiverId !== userId)
+                continue;
+            const otherId = msg.senderId === userId ? msg.receiverId : msg.senderId;
+            const current = conversationMap.get(otherId);
+            const isUnreadForUser = msg.receiverId === userId && !msg.readAt;
+            if (!current) {
+                conversationMap.set(otherId, {
+                    lastMessage: msg,
+                    unreadCount: isUnreadForUser ? 1 : 0,
+                });
+            }
+            else {
+                if (msg.createdAt > current.lastMessage.createdAt) {
+                    current.lastMessage = msg;
+                }
+                if (isUnreadForUser) {
+                    current.unreadCount += 1;
+                }
+            }
+        }
+        const summaries = [];
+        for (const [otherId, data] of conversationMap.entries()) {
+            const otherUser = this.getUser(otherId);
+            if (!otherUser)
+                continue;
+            summaries.push({ otherUser, lastMessage: data.lastMessage, unreadCount: data.unreadCount });
+        }
+        // Sort by last message time desc
+        summaries.sort((a, b) => b.lastMessage.createdAt.getTime() - a.lastMessage.createdAt.getTime());
+        return summaries;
+    }
     markMessageAsRead(messageId, userId) {
         const message = this.messages.find(msg => msg.id === messageId);
         if (message && message.receiverId === userId) {

@@ -1,4 +1,4 @@
-import { User, Message, AuthResponse } from '../types';
+import { User, Message, AuthResponse, ChatSummary } from '../types';
 import { API_BASE_URL } from '../config';
 
 class ApiClient {
@@ -67,6 +67,10 @@ class ApiClient {
     }
 
     return this.request<Message[]>(`/messages/${peerId}?${params}`);
+  }
+
+  async getChats(): Promise<ChatSummary[]> {
+    return this.request<ChatSummary[]>('/chats');
   }
 }
 

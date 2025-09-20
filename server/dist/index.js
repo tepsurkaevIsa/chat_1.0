@@ -67,6 +67,14 @@ app.post('/auth/login', async (req, res) => {
 // Get all users
 app.get('/users', (req, res) => {
     try {
+        const token = req.headers.authorization?.replace('Bearer ', '');
+        if (!token) {
+            return res.status(401).json({ error: 'Authentication required' });
+        }
+        const userId = (0, auth_1.verifyToken)(token);
+        if (!userId) {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
         const users = store_1.store.getAllUsers();
         res.json(users);
     }
@@ -93,10 +101,35 @@ app.get('/messages/:peerId', (req, res) => {
         if (before) {
             messages = messages.filter(msg => msg.createdAt < before);
         }
+        // Mark messages as read for the authenticated user
+        messages.forEach(msg => {
+            if (msg.receiverId === userId && !msg.readAt) {
+                store_1.store.markMessageAsRead(msg.id, userId);
+            }
+        });
         res.json(messages);
     }
     catch (error) {
         console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+// Get chat summaries for the authenticated user
+app.get('/chats', (req, res) => {
+    try {
+        const token = req.headers.authorization?.replace('Bearer ', '');
+        if (!token) {
+            return res.status(401).json({ error: 'Authentication required' });
+        }
+        const userId = (0, auth_1.verifyToken)(token);
+        if (!userId) {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+        const chats = store_1.store.getChatSummariesForUser(userId);
+        res.json(chats);
+    }
+    catch (error) {
+        console.error('Error fetching chats:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -107,7 +140,7 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📡 WebSocket server ready`);
-    console.log(`👥 Demo users: Alice, Bob, Charlie, Diana, Eve`);
+    // Demo users log removed
 });
 // Graceful shutdown
 process.on('SIGTERM', () => {

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Message, ChatState, PresenceData, TypingData } from './types';
+import { Message, ChatState, PresenceData, TypingData, ChatSummary } from './types';
 import { apiClient } from './lib/api';
 import { socketClient } from './lib/socket';
 import { LoginForm } from './components/LoginForm';
 import { RegisterForm } from './components/RegisterForm';
 import { Sidebar } from './components/Sidebar';
 import { ChatWindow } from './components/ChatWindow';
+import { ChatsSidebar } from './components/ChatsSidebar';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { ThemeToggle } from './components/ui/ThemeToggle';
 
@@ -22,6 +23,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [isMobile, setIsMobile] = useState(false);
+  const [chats, setChats] = useState<ChatSummary[]>([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,10 +48,11 @@ function App() {
     }
   }, []);
 
-  // Load users when connected
+  // Load users and chats when connected
   useEffect(() => {
     if (chatState.currentUser && chatState.isConnected) {
       loadUsers();
+      loadChats();
     }
   }, [chatState.currentUser, chatState.isConnected]);
 
@@ -68,6 +71,15 @@ function App() {
     } catch (error) {
       console.error('Error loading users:', error);
       setError('Не удалось загрузить пользователей');
+    }
+  };
+
+  const loadChats = async () => {
+    try {
+      const list = await apiClient.getChats();
+      setChats(list);
+    } catch (error) {
+      console.error('Error loading chats:', error);
     }
   };
 
@@ -151,6 +163,8 @@ function App() {
       // Load messages for this conversation
       const messages = await apiClient.getMessages(userId, 50);
       setChatState(prev => ({ ...prev, messages }));
+      // Reset unread counter for this chat
+      setChats(prev => prev.map(c => c.otherUser.id === userId ? { ...c, unreadCount: 0 } : c));
     } catch (error) {
       console.error('Error loading messages:', error);
       setError('Не удалось загрузить сообщения');
@@ -159,7 +173,7 @@ function App() {
 
   const handleBack = () => {
     setChatState(prev => ({ ...prev, currentChatUserId: null, messages: [] }));
-    navigate('/users');
+    navigate('/chats');
   };
 
   // Extract chat id from route
@@ -175,10 +189,10 @@ function App() {
     }
   }, [chatIdFromPath]);
 
-  // On mobile, ensure root routes go to /users; also clear selection on /users
+  // On mobile, ensure root routes go to /chats; also clear selection on /users
   useEffect(() => {
     if (isMobile && (location.pathname === '/' || location.pathname === '')) {
-      navigate('/users', { replace: true });
+      navigate('/chats', { replace: true });
     }
     if (isMobile && location.pathname === '/users') {
       setChatState(prev => ({ ...prev, currentChatUserId: null, messages: [] }));
@@ -217,6 +231,25 @@ function App() {
         }
         return prev;
       });
+
+      // Update chats list (lastMessage/unread)
+      const currentUserId = chatState.currentUser?.id;
+      if (!currentUserId) return;
+      const otherUserId = message.senderId === currentUserId ? message.receiverId : message.senderId;
+      setChats(prev => {
+        const existing = prev.find(c => c.otherUser.id === otherUserId);
+        const isActive = chatState.currentChatUserId === otherUserId;
+        if (existing) {
+          const isFromOther = message.senderId === otherUserId;
+          const unreadCount = isFromOther && !isActive ? existing.unreadCount + 1 : existing.unreadCount;
+          return prev.map(c => c.otherUser.id === otherUserId ? { ...c, lastMessage: message, unreadCount } : c);
+        } else {
+          const otherUser = chatState.users.find(u => u.id === otherUserId);
+          if (!otherUser) return prev;
+          const unreadCount = message.senderId === otherUserId && !isActive ? 1 : 0;
+          return [{ otherUser, lastMessage: message, unreadCount }, ...prev];
+        }
+      });
     };
 
     const handlePresence = (data: PresenceData) => {
@@ -228,6 +261,7 @@ function App() {
             : user
         )
       }));
+      setChats(prev => prev.map(c => c.otherUser.id === data.userId ? { ...c, otherUser: { ...c.otherUser, isOnline: data.isOnline } } : c));
     };
 
     const handleTyping = (data: TypingData) => {
@@ -258,7 +292,7 @@ function App() {
       socketClient.off('presence');
       socketClient.off('typing');
     };
-  }, []);
+  }, [chatState.currentUser?.id, chatState.currentChatUserId]);
 
   // Show auth forms if not authenticated
   if (!chatState.currentUser) {
@@ -307,10 +341,22 @@ function App() {
         <div className="flex-1 flex flex-col w-full h-full">
           <Routes>
             <Route
+              path="/chats"
+              element={
+                <ChatsSidebar
+                  chats={chats}
+                  currentUser={chatState.currentUser}
+                  currentChatUserId={chatState.currentChatUserId}
+                  onChatSelect={(userId) => navigate(`/chat/${userId}`)}
+                  onNewChat={() => navigate('/users')}
+                />
+              }
+            />
+            <Route
               path="/users"
               element={
                 <Sidebar
-                  users={chatState.users}
+                  users={chatState.users.filter(u => u.id !== chatState.currentUser!.id && !chats.find(c => c.otherUser.id === u.id))}
                   currentUser={chatState.currentUser}
                   currentChatUserId={chatState.currentChatUserId}
                   onUserSelect={(userId) => navigate(`/chat/${userId}`)}
@@ -326,22 +372,23 @@ function App() {
                   messages={chatState.messages}
                   typingUsers={chatState.typingUsers}
                   onBack={handleBack}
-                  onMenuToggle={() => navigate('/users')}
+                  onMenuToggle={() => navigate('/chats')}
                 />
               }
             />
-            <Route path="*" element={<Navigate to="/users" replace />} />
+            <Route path="*" element={<Navigate to="/chats" replace />} />
           </Routes>
         </div>
       ) : (
         // Desktop: classic split view with persistent sidebar
         <>
           <div className="hidden lg:block lg:w-80 flex-shrink-0 border-r border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/60 backdrop-blur">
-            <Sidebar
-              users={chatState.users}
+            <ChatsSidebar
+              chats={chats}
               currentUser={chatState.currentUser}
               currentChatUserId={chatState.currentChatUserId}
-              onUserSelect={(userId) => navigate(`/chat/${userId}`)}
+              onChatSelect={(userId) => navigate(`/chat/${userId}`)}
+              onNewChat={() => navigate('/users')}
             />
           </div>
           <div className="flex-1 flex flex-col">
