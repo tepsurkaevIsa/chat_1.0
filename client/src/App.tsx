@@ -172,10 +172,7 @@ function App() {
     }
   };
 
-  const handleBack = () => {
-    setChatState(prev => ({ ...prev, currentChatUserId: null, messages: [] }));
-    navigate('/chats');
-  };
+  // Back navigation handled solely via menu toggle and routing
 
   // Extract chat id from route
   const chatIdFromPath = location.pathname.startsWith('/chat/')
@@ -368,7 +365,6 @@ function App() {
                   otherUser={currentChatUser || null}
                   messages={chatState.messages}
                   typingUsers={chatState.typingUsers}
-                  onBack={handleBack}
                   onMenuToggle={() => navigate('/chats')}
                 />
               }
@@ -412,8 +408,6 @@ function App() {
               otherUser={currentChatUser || null}
               messages={chatState.messages}
               typingUsers={chatState.typingUsers}
-              onBack={() => {}}
-              onMenuToggle={() => {}}
             />
           </div>
         </>

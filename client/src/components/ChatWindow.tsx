@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { User, Message as MessageType } from '../types';
 import { Message } from './Message';
 import { TypingIndicator } from './TypingIndicator';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { socketClient } from '../lib/socket';
 import { useSwipe } from '../hooks/useSwipe';
 import { ThemeToggle } from './ui/ThemeToggle';
@@ -13,7 +13,6 @@ interface ChatWindowProps {
   otherUser: User | null;
   messages: MessageType[];
   typingUsers: Set<string>;
-  onBack: () => void;
   onMenuToggle?: () => void;
 }
 
@@ -22,7 +21,6 @@ export function ChatWindow({
   otherUser, 
   messages, 
   typingUsers, 
-  onBack,
   onMenuToggle
 }: ChatWindowProps) {
   const [messageText, setMessageText] = useState('');
@@ -131,9 +129,7 @@ export function ChatWindow({
     <div className={styles.root} {...swipeHandlers}>
       <div className={styles.header}>
         <div className={styles.headerRow}>
-          <button onClick={onBack} className={`${styles.backBtn} ${styles.mobileOnly}`}>
-            <ArrowLeft width={20} height={20} />
-          </button>
+          {/* Back button removed per request */}
           <div className={styles.avatarWrap}>
             <div className={styles.avatar}>
               {otherUser.username.charAt(0).toUpperCase()}
