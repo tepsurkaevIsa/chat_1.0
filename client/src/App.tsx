@@ -197,10 +197,6 @@ function App() {
     if (isMobile && location.pathname === '/users') {
       setChatState(prev => ({ ...prev, currentChatUserId: null, messages: [] }));
     }
-    if (!isMobile && location.pathname === '/users') {
-      // If resized to desktop while on /users, keep the layout root
-      navigate('/', { replace: true });
-    }
   }, [isMobile, location.pathname]);
 
   // WebSocket event handlers
@@ -380,20 +376,38 @@ function App() {
           </Routes>
         </div>
       ) : (
-        // Desktop: classic split view with persistent sidebar
+        // Desktop: split view; left pane switches between chats and users by route
         <>
           <div className="hidden lg:block lg:w-80 flex-shrink-0 border-r border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/60 backdrop-blur">
-            <ChatsSidebar
-              chats={chats}
-              currentUser={chatState.currentUser}
-              currentChatUserId={chatState.currentChatUserId}
-              onChatSelect={(userId) => navigate(`/chat/${userId}`)}
-              onNewChat={() => navigate('/users')}
-            />
+            <Routes>
+              <Route
+                path="/users"
+                element={
+                  <Sidebar
+                    users={chatState.users.filter(u => u.id !== chatState.currentUser!.id && !chats.find(c => c.otherUser.id === u.id))}
+                    currentUser={chatState.currentUser!}
+                    currentChatUserId={chatState.currentChatUserId}
+                    onUserSelect={(userId) => navigate(`/chat/${userId}`)}
+                  />
+                }
+              />
+              <Route
+                path="*"
+                element={
+                  <ChatsSidebar
+                    chats={chats}
+                    currentUser={chatState.currentUser!}
+                    currentChatUserId={chatState.currentChatUserId}
+                    onChatSelect={(userId) => navigate(`/chat/${userId}`)}
+                    onNewChat={() => navigate('/users')}
+                  />
+                }
+              />
+            </Routes>
           </div>
           <div className="flex-1 flex flex-col">
             <ChatWindow
-              currentUser={chatState.currentUser}
+              currentUser={chatState.currentUser!}
               otherUser={currentChatUser || null}
               messages={chatState.messages}
               typingUsers={chatState.typingUsers}
