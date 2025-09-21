@@ -60,8 +60,14 @@
 @layer base {
   /* Smooth transitions */
   * {
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   }
+  /* Avoid color/background transitions on theme toggle to prevent flicker */
+  html.dark *, html:not(.dark) * {
+    transition-property: border-color, box-shadow;
+  }
+  /* Keep icons stable */
+  svg, svg * { transition: none !important; }
 
   /* Base */
   html {
