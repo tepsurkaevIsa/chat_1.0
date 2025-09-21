@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../types';
-import { Users, MessageCircle, Search, ArrowLeft } from 'lucide-react';
+import { Users, MessageCircle, Search } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import { ThemeToggle } from './ui/ThemeToggle';
 
@@ -34,27 +34,18 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
             <p className={styles.online}>В сети</p>
           </div>
           <div className={styles.controls}>
-            <div className={styles.mobileOnly}>
-              <ThemeToggle />
-            </div>
             <button
               onClick={() => navigate('/chats')}
               aria-label="К чатам"
               title="К чатам"
-              className={`${styles.controlBtn} ${styles.desktopOnly}`}
+              className={styles.controlBtn}
             >
               <MessageCircle width={20} height={20} />
               <span className={styles.btnText}>Чаты</span>
             </button>
-            <button
-              onClick={() => navigate('/chats')}
-              aria-label="К чатам"
-              title="К чатам"
-              className={`${styles.controlBtn} ${styles.mobileOnly}`}
-            >
-              <ArrowLeft width={20} height={20} />
-              <span className={styles.btnText}>Чаты</span>
-            </button>
+            <div className={styles.mobileOnly}>
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </div>

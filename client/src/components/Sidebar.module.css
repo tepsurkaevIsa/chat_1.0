@@ -55,9 +55,6 @@
 	gap: 0.5rem;
 }
 
-.mobileOnly { display: inline-flex; }
-.desktopOnly { display: none; }
-
 @media (min-width: 1024px) {
 	.mobileOnly { display: none; }
 	.desktopOnly { display: inline-flex; }
@@ -68,6 +65,9 @@
 	align-items: center;
 	gap: 0.25rem;
 	padding: 0.25rem 0.5rem;
+	background: var(--color-surface-strong);
+	color: var(--color-text);
+	border: none;
 	border-radius: 0.5rem;
 	transition: background-color 0.2s ease-in-out;
 }
@@ -121,7 +121,6 @@
 }
 
 .searchInput {
-	width: 100%;
 	padding: 0.5rem 0.75rem 0.5rem 2.25rem;
 	font-size: 0.875rem;
 	border-radius: 0.5rem;
@@ -136,7 +135,10 @@
 	gap: 0.75rem;
 	width: 100%;
 	padding: 0.75rem;
-	border-radius: 0.5rem;
+	border: none;
+	border-radius: 1rem;
+	background: var(--color-surface-strong);
+	margin-bottom: 0.3rem;
 	transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 
@@ -177,7 +179,7 @@
 }
 
 .userNameRow { display: flex; align-items: center; gap: 0.5rem; }
-.userNameText { font-size: 0.875rem; font-weight: 600; color: var(--color-text); }
+.userNameText { margin: 0; font-size: 0.875rem; font-weight: 600; color: var(--color-text); }
 .userNameDot { width: 0.5rem; height: 0.5rem; background: var(--color-online); border-radius: 9999px; flex-shrink: 0; }
 .userStatus { font-size: 0.75rem; color: var(--color-text-muted); }
 

@@ -58,8 +58,8 @@ export function LoginForm({ onLogin, onSwitchToRegister, isLoading }: LoginFormP
         </div>
         
         <form className={styles.form} onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="username" className={styles.label}>Имя пользователя</label>
+          <label htmlFor="username" className={styles.label}>Имя пользователя</label>
+          <div className={styles.inputWrap}>
             <input
               id="username"
               name="username"

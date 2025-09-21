@@ -26,13 +26,13 @@
 .search { padding: 1rem; border-bottom: 1px solid var(--color-border); }
 .searchWrap { position: relative; }
 .searchIcon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; width: 1rem; height: 1rem; }
-.searchInput { width: 100%; padding: 0.5rem 0.75rem 0.5rem 2.25rem; font-size: 0.875rem; border: 1px solid var(--color-border); border-radius: 0.5rem; background: var(--color-surface-strong); color: var(--color-text); }
+.searchInput { padding: 0.5rem 0.75rem 0.5rem 2.25rem; font-size: 0.875rem; border: 1px solid var(--color-border); border-radius: 0.5rem; background: var(--color-surface-strong); color: var(--color-text); }
 .searchInput:focus { outline: none; box-shadow: 0 0 0 2px rgba(37,99,235,0.35); border-color: transparent; }
 
 .list { flex: 1; overflow: auto; padding: 1rem; }
 .empty { font-size: 0.875rem; color: var(--color-text-muted); }
 .items { display: flex; flex-direction: column; gap: 0.5rem; }
-.item { width: 100%; display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.5rem; transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; }
+.item { width: 100%; display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.5rem; border: none; background: var(--color-surface-strong); transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; }
 .item:hover { background: rgba(0,0,0,0.04); }
 .itemActive { background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.25); }
 .avatarWrap { position: relative; }
@@ -40,7 +40,7 @@
 .onlineDot { position: absolute; right: -0.25rem; bottom: -0.25rem; width: 1rem; height: 1rem; background: var(--color-online); border: 2px solid var(--color-surface); border-radius: 9999px; }
 .itemText { flex: 1; min-width: 0; text-align: left; }
 .itemTop { display: flex; align-items: center; justify-content: space-between; }
-.itemName { font-size: 0.875rem; font-weight: 600; color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.itemName { margin: 0; font-size: 0.875rem; font-weight: 600; color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .badge { margin-left: 0.5rem; font-size: 0.75rem; background: var(--color-primary); color: #fff; padding: 0.125rem 0.5rem; border-radius: 9999px; }
 .itemLast { font-size: 0.75rem; color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 

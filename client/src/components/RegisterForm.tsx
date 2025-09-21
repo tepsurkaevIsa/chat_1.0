@@ -67,8 +67,8 @@ export function RegisterForm({ onRegister, onSwitchToLogin, isLoading }: Registe
         </div>
         
         <form className={styles.form} onSubmit={handleSubmit}>
-          <div>
             <label htmlFor="username" className={styles.label}>Имя пользователя</label>
+            <div className={styles.inputWrap}>
             <input
               id="username"
               name="username"
