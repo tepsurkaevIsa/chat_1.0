@@ -9,10 +9,7 @@
 .form { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
 @media (min-width: 640px) { .form { gap: 1.5rem; } }
 
-.input{
-  all: unset;
-  all: revert;
-}
+/* Keep input styles minimal; rely on global base reset for consistency */
 
 .input {
     flex: 1; /* растягиваем инпут на всю доступную ширину */
