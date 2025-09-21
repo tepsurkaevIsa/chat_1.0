@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { User, Message as MessageType } from '../types';
 import { Message } from './Message';
 import { TypingIndicator } from './TypingIndicator';
-import { Send } from 'lucide-react';
+import { MessageCircle, Send } from 'lucide-react';
 import { socketClient } from '../lib/socket';
 import { useSwipe } from '../hooks/useSwipe';
 import { ThemeToggle } from './ui/ThemeToggle';
@@ -140,14 +140,13 @@ export function ChatWindow({
             <h2 className={styles.title}>{otherUser.username}</h2>
             <p className={styles.subtitle}>{otherUser.isOnline ? 'В сети' : 'Не в сети'}</p>
           </div>
+          <button onClick={onMenuToggle} className={`${styles.menuBtn} ${styles.mobileOnly}`} aria-label="Меню">
+              <MessageCircle width={20} height={20} />
+              <span className={styles.btnText}>Чаты</span>
+          </button>
           <div className={styles.mobileOnly}>
             <ThemeToggle />
           </div>
-          <button onClick={onMenuToggle} className={`${styles.menuBtn} ${styles.mobileOnly}`} aria-label="Меню">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
         </div>
       </div>
 
