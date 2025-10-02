@@ -12,10 +12,10 @@
 .own { background: var(--color-primary); color: #ffffff; }
 .other { background: var(--color-surface-strong); color: var(--color-text); }
 .meta { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
-.avatar { width: 1.25rem; height: 1.25rem; border-radius: 9999px; background: #6b7280; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; flex-shrink: 0; }
+.avatar { width: 1.1rem; height: 1.1rem; border-radius: 9999px; background: #6b7280; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 500; flex-shrink: 0; }
 .sender { font-size: 0.75rem; font-weight: 600; opacity: 0.75; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.text { font-size: 0.875rem; word-break: break-word; }
-.bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 0.25rem; }
+.text { font-size: 0.875rem; word-break: break-word; margin: 0; }
+.bottom { display: flex; align-items: center; justify-content: end; margin-top: 0.25rem; }
 .time { font-size: 0.75rem; opacity: 0.75; color: rgba(255,255,255,0.8); }
 .timeOther { color: var(--color-text-muted); }
 

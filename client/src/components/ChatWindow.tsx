@@ -140,7 +140,7 @@ export function ChatWindow({
             <h2 className={styles.title}>{otherUser.username}</h2>
             <p className={styles.subtitle}>{otherUser.isOnline ? 'В сети' : 'Не в сети'}</p>
           </div>
-          <button onClick={onMenuToggle} className={`${styles.menuBtn} ${styles.mobileOnly}`} aria-label="Меню">
+          <button onClick={onMenuToggle} className={`${styles.controlBtn} ${styles.mobileOnly}`} aria-label="Меню">
               <MessageCircle width={20} height={20} />
               <span className={styles.btnText}>Чаты</span>
           </button>

@@ -82,6 +82,7 @@
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   background: var(--color-bg);
   color: var(--color-text);
+  overflow: hidden;
   }
 
   /* Form control base reset tuned for theming */
