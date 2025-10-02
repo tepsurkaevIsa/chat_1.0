@@ -36,15 +36,15 @@ class SocketManager {
             ws.userId = userId;
             this.clients.set(userId, ws);
             // Set user as online
-            store_1.store.setUserOnline(userId, true);
+            void store_1.store.setUserOnline(userId, true).catch((err) => console.error('Failed to set user online:', err));
             this.broadcastPresence(userId, true);
             // Send recent messages to the user
-            this.sendRecentMessages(ws, userId);
+            void this.sendRecentMessages(ws, userId);
             // Handle messages
             ws.on('message', (data) => {
                 try {
                     const message = JSON.parse(data.toString());
-                    this.handleMessage(ws, message);
+                    void this.handleMessage(ws, message);
                 }
                 catch (error) {
                     console.error('Error parsing WebSocket message:', error);
@@ -55,7 +55,7 @@ class SocketManager {
             ws.on('close', () => {
                 if (ws.userId) {
                     this.clients.delete(ws.userId);
-                    store_1.store.setUserOnline(ws.userId, false);
+                    void store_1.store.setUserOnline(ws.userId, false).catch((err) => console.error('Failed to set user offline:', err));
                     this.broadcastPresence(ws.userId, false);
                     this.typingUsers.delete(ws.userId);
                 }
@@ -88,12 +88,12 @@ class SocketManager {
         const urlObj = new URL(url, 'http://localhost');
         return urlObj.searchParams.get('token');
     }
-    handleMessage(ws, message) {
+    async handleMessage(ws, message) {
         if (!ws.userId)
             return;
         switch (message.type) {
             case 'message:send':
-                this.handleSendMessage(ws, message.data);
+                await this.handleSendMessage(ws, message.data);
                 break;
             case 'typing':
                 this.handleTyping(ws, message.data);
@@ -102,7 +102,7 @@ class SocketManager {
                 this.sendError(ws, 'Unknown message type');
         }
     }
-    handleSendMessage(ws, data) {
+    async handleSendMessage(ws, data) {
         if (!ws.userId || !data.to || !data.text) {
             this.sendError(ws, 'Invalid message data');
             return;
@@ -118,7 +118,7 @@ class SocketManager {
         }
         ws[userKey] = now;
         // Add message to store
-        const message = store_1.store.addMessage(ws.userId, data.to, data.text);
+        const message = await store_1.store.addMessage(ws.userId, data.to, data.text);
         // Send to sender (confirmation)
         this.sendMessage(ws, {
             type: 'message:new',
@@ -164,8 +164,8 @@ class SocketManager {
             });
         }
     }
-    sendRecentMessages(ws, userId) {
-        const recentMessages = store_1.store.getRecentMessages(userId, 20);
+    async sendRecentMessages(ws, userId) {
+        const recentMessages = await store_1.store.getRecentMessages(userId, 20);
         recentMessages.forEach(message => {
             this.sendMessage(ws, {
                 type: 'message:new',

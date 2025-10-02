@@ -65,7 +65,7 @@ app.post('/auth/login', async (req, res) => {
     }
 });
 // Get all users
-app.get('/users', (req, res) => {
+app.get('/users', async (req, res) => {
     try {
         const token = req.headers.authorization?.replace('Bearer ', '');
         if (!token) {
@@ -75,7 +75,7 @@ app.get('/users', (req, res) => {
         if (!userId) {
             return res.status(401).json({ error: 'Invalid token' });
         }
-        const users = store_1.store.getAllUsers();
+        const users = await store_1.store.getAllUsers();
         res.json(users);
     }
     catch (error) {
@@ -84,7 +84,7 @@ app.get('/users', (req, res) => {
     }
 });
 // Get messages between two users
-app.get('/messages/:peerId', (req, res) => {
+app.get('/messages/:peerId', async (req, res) => {
     try {
         const token = req.headers.authorization?.replace('Bearer ', '');
         if (!token) {
@@ -97,16 +97,14 @@ app.get('/messages/:peerId', (req, res) => {
         const { peerId } = req.params;
         const limit = parseInt(req.query.limit) || 50;
         const before = req.query.before ? new Date(req.query.before) : undefined;
-        let messages = store_1.store.getMessagesBetweenUsers(userId, peerId, limit);
-        if (before) {
-            messages = messages.filter(msg => msg.createdAt < before);
-        }
+        const messages = await store_1.store.getMessagesBetweenUsers(userId, peerId, limit, before);
         // Mark messages as read for the authenticated user
-        messages.forEach(msg => {
+        await Promise.all(messages.map(msg => {
             if (msg.receiverId === userId && !msg.readAt) {
-                store_1.store.markMessageAsRead(msg.id, userId);
+                return store_1.store.markMessageAsRead(msg.id, userId);
             }
-        });
+            return Promise.resolve();
+        }));
         res.json(messages);
     }
     catch (error) {
@@ -115,7 +113,7 @@ app.get('/messages/:peerId', (req, res) => {
     }
 });
 // Get chat summaries for the authenticated user
-app.get('/chats', (req, res) => {
+app.get('/chats', async (req, res) => {
     try {
         const token = req.headers.authorization?.replace('Bearer ', '');
         if (!token) {
@@ -125,7 +123,7 @@ app.get('/chats', (req, res) => {
         if (!userId) {
             return res.status(401).json({ error: 'Invalid token' });
         }
-        const chats = store_1.store.getChatSummariesForUser(userId);
+        const chats = await store_1.store.getChatSummariesForUser(userId);
         res.json(chats);
     }
     catch (error) {

@@ -1,160 +1,125 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.store = void 0;
-// In-memory storage for MVP
+const db_1 = require("./db");
 class Store {
-    constructor() {
-        this.users = new Map();
-        this.messages = [];
-        this.onlineUsers = new Set();
-        // Initialize with demo users
-        this.initializeDemoUsers();
-    }
-    initializeDemoUsers() {
-        const demoUsers = [
-            {
-                id: '1',
-                username: 'Alice',
+    // User management (DB-backed)
+    async addUser(username, password) {
+        const user = await db_1.prisma.user.create({
+            data: {
+                username,
+                password,
                 isOnline: false,
-                createdAt: new Date('2024-01-01')
             },
-            {
-                id: '2',
-                username: 'Bob',
-                isOnline: false,
-                createdAt: new Date('2024-01-01')
-            },
-            {
-                id: '3',
-                username: 'Charlie',
-                isOnline: false,
-                createdAt: new Date('2024-01-01')
-            },
-            {
-                id: '4',
-                username: 'Diana',
-                isOnline: false,
-                createdAt: new Date('2024-01-01')
-            },
-            {
-                id: '5',
-                username: 'Eve',
-                isOnline: false,
-                createdAt: new Date('2024-01-01')
-            },
-        ];
-        demoUsers.forEach(user => {
-            this.users.set(user.id, user);
         });
-    }
-    // User management
-    addUser(username, password) {
-        const id = Date.now().toString();
-        const user = {
-            id,
-            username,
-            password,
-            isOnline: false,
-            createdAt: new Date(),
-        };
-        this.users.set(id, user);
         return user;
     }
-    getUser(id) {
-        return this.users.get(id);
+    async getUser(id) {
+        const user = await db_1.prisma.user.findUnique({ where: { id } });
+        return user || undefined;
     }
-    getUserByUsername(username) {
-        for (const user of this.users.values()) {
-            if (user.username === username) {
-                return user;
-            }
-        }
-        return undefined;
+    async getUserByUsername(username) {
+        const user = await db_1.prisma.user.findUnique({ where: { username } });
+        return user || undefined;
     }
-    getAllUsers() {
-        return Array.from(this.users.values());
+    async getAllUsers() {
+        const users = await db_1.prisma.user.findMany({ orderBy: { createdAt: 'asc' } });
+        return users;
     }
-    setUserOnline(userId, isOnline) {
-        const user = this.users.get(userId);
-        if (user) {
-            user.isOnline = isOnline;
-            user.lastSeen = new Date();
-            if (isOnline) {
-                this.onlineUsers.add(userId);
-            }
-            else {
-                this.onlineUsers.delete(userId);
-            }
-        }
+    async setUserOnline(userId, isOnline) {
+        await db_1.prisma.user.update({
+            where: { id: userId },
+            data: { isOnline, lastSeen: new Date() },
+        }).catch(() => undefined);
     }
-    getOnlineUsers() {
-        return Array.from(this.onlineUsers);
+    async getOnlineUsers() {
+        const users = await db_1.prisma.user.findMany({ where: { isOnline: true }, select: { id: true } });
+        return users.map(u => u.id);
     }
-    // Message management
-    addMessage(senderId, receiverId, text) {
-        const message = {
-            id: Date.now().toString(),
-            senderId,
-            receiverId,
-            text,
-            createdAt: new Date(),
-        };
-        this.messages.push(message);
+    // Message management (DB-backed)
+    async addMessage(senderId, receiverId, text) {
+        const message = await db_1.prisma.message.create({
+            data: { senderId, receiverId, text },
+        });
         return message;
     }
-    getMessagesBetweenUsers(userId1, userId2, limit = 50) {
-        return this.messages
-            .filter(msg => (msg.senderId === userId1 && msg.receiverId === userId2) ||
-            (msg.senderId === userId2 && msg.receiverId === userId1))
-            .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
-            .slice(-limit);
+    async getMessagesBetweenUsers(userId1, userId2, limit = 50, before) {
+        const where = {
+            OR: [
+                { senderId: userId1, receiverId: userId2 },
+                { senderId: userId2, receiverId: userId1 },
+            ],
+        };
+        if (before) {
+            where.createdAt = { lt: before };
+        }
+        const messagesDesc = await db_1.prisma.message.findMany({
+            where: where,
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+        });
+        // Return ascending by createdAt (oldest first)
+        return messagesDesc.reverse();
     }
-    getRecentMessages(userId, limit = 20) {
-        return this.messages
-            .filter(msg => msg.senderId === userId || msg.receiverId === userId)
-            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-            .slice(0, limit);
+    async getRecentMessages(userId, limit = 20) {
+        const messages = await db_1.prisma.message.findMany({
+            where: {
+                OR: [{ senderId: userId }, { receiverId: userId }],
+            },
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+        });
+        return messages;
     }
-    getChatSummariesForUser(userId) {
-        // Group messages by the other participant
-        const conversationMap = new Map();
-        for (const msg of this.messages) {
-            if (msg.senderId !== userId && msg.receiverId !== userId)
-                continue;
+    async getChatSummariesForUser(userId) {
+        // Unread counts per peer (sender)
+        const unreadGroups = await db_1.prisma.message.groupBy({
+            by: ['senderId'],
+            where: { receiverId: userId, readAt: null },
+            _count: { _all: true },
+        }).catch(() => []);
+        const unreadCountByPeer = {};
+        for (const g of unreadGroups) {
+            unreadCountByPeer[g.senderId] = g._count._all;
+        }
+        // Recent messages involving the user, limit to a reasonable window
+        const recent = await db_1.prisma.message.findMany({
+            where: { OR: [{ senderId: userId }, { receiverId: userId }] },
+            orderBy: { createdAt: 'desc' },
+            take: 500,
+        });
+        const lastMessageByPeer = new Map();
+        for (const msg of recent) {
             const otherId = msg.senderId === userId ? msg.receiverId : msg.senderId;
-            const current = conversationMap.get(otherId);
-            const isUnreadForUser = msg.receiverId === userId && !msg.readAt;
-            if (!current) {
-                conversationMap.set(otherId, {
-                    lastMessage: msg,
-                    unreadCount: isUnreadForUser ? 1 : 0,
-                });
-            }
-            else {
-                if (msg.createdAt > current.lastMessage.createdAt) {
-                    current.lastMessage = msg;
-                }
-                if (isUnreadForUser) {
-                    current.unreadCount += 1;
-                }
+            if (!lastMessageByPeer.has(otherId)) {
+                lastMessageByPeer.set(otherId, msg);
             }
         }
+        const peerIds = Array.from(lastMessageByPeer.keys());
+        if (peerIds.length === 0)
+            return [];
+        const peers = await db_1.prisma.user.findMany({ where: { id: { in: peerIds } } });
+        const peerById = new Map(peers.map(u => [u.id, u]));
         const summaries = [];
-        for (const [otherId, data] of conversationMap.entries()) {
-            const otherUser = this.getUser(otherId);
-            if (!otherUser)
+        for (const peerId of peerIds) {
+            const otherUser = peerById.get(peerId);
+            const lastMessage = lastMessageByPeer.get(peerId);
+            if (!otherUser || !lastMessage)
                 continue;
-            summaries.push({ otherUser, lastMessage: data.lastMessage, unreadCount: data.unreadCount });
+            summaries.push({
+                otherUser: otherUser,
+                lastMessage: lastMessage,
+                unreadCount: unreadCountByPeer[peerId] || 0,
+            });
         }
-        // Sort by last message time desc
         summaries.sort((a, b) => b.lastMessage.createdAt.getTime() - a.lastMessage.createdAt.getTime());
         return summaries;
     }
-    markMessageAsRead(messageId, userId) {
-        const message = this.messages.find(msg => msg.id === messageId);
-        if (message && message.receiverId === userId) {
-            message.readAt = new Date();
-        }
+    async markMessageAsRead(messageId, userId) {
+        await db_1.prisma.message.updateMany({
+            where: { id: messageId, receiverId: userId, readAt: null },
+            data: { readAt: new Date() },
+        });
     }
 }
 exports.store = new Store();

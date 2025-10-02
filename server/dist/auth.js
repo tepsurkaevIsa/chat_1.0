@@ -25,7 +25,7 @@ function verifyToken(token) {
 }
 async function registerUser(username, password) {
     // Check if user already exists
-    const existingUser = store_1.store.getUserByUsername(username);
+    const existingUser = await store_1.store.getUserByUsername(username);
     if (existingUser) {
         throw new Error('User already exists');
     }
@@ -36,9 +36,9 @@ async function registerUser(username, password) {
     // Hash password
     const hashedPassword = await bcryptjs_1.default.hash(password, 10);
     // Create new user
-    const user = store_1.store.addUser(username, hashedPassword);
+    const user = await store_1.store.addUser(username, hashedPassword);
     // Set user as online
-    store_1.store.setUserOnline(user.id, true);
+    await store_1.store.setUserOnline(user.id, true);
     const token = generateToken(user.id);
     return {
         token,
@@ -50,7 +50,7 @@ async function registerUser(username, password) {
 }
 async function loginUser(username, password) {
     // Find user
-    const user = store_1.store.getUserByUsername(username);
+    const user = await store_1.store.getUserByUsername(username);
     if (!user) {
         throw new Error('Invalid username or password');
     }
@@ -64,7 +64,7 @@ async function loginUser(username, password) {
         throw new Error('Invalid username or password');
     }
     // Set user as online
-    store_1.store.setUserOnline(user.id, true);
+    await store_1.store.setUserOnline(user.id, true);
     const token = generateToken(user.id);
     return {
         token,
