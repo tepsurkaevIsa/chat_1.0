@@ -18,11 +18,6 @@ const wss = new ws_1.default.Server({ server });
 // Middleware
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-// Раздача фронтенда React (SPA)
-app.use(express_1.default.static(path_1.default.join('../client/dist')));
-app.get('*', (req, res) => {
-    res.sendFile(path_1.default.join('../client/dist/index.html'));
-});
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
@@ -118,6 +113,14 @@ app.get('/chats', async (req, res) => {
         console.error('Error fetching chats:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+});
+// Абсолютный путь к сборке фронтенда
+const clientPath = path_1.default.join(__dirname, '../../client/dist');
+// Раздаём статику
+app.use(express_1.default.static(clientPath));
+// Любой другой GET — отдаём index.html
+app.get('*', (req, res) => {
+    res.sendFile('index.html', { root: clientPath });
 });
 // WebSocket manager
 const socketManager = new sockets_1.SocketManager(wss);

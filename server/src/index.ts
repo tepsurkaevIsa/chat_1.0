@@ -17,17 +17,6 @@ const wss = new WebSocket.Server({ server });
 app.use(cors());
 app.use(express.json());
 
-// Абсолютный путь к сборке фронтенда
-const clientPath = path.join(__dirname, '../../client/dist');
-
-// Раздаём статику
-app.use(express.static(clientPath));
-
-// Любой другой GET — отдаём index.html
-app.get('*', (req, res) => {
-  res.sendFile('index.html', { root: clientPath });
-});
-
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
@@ -123,6 +112,18 @@ app.get('/chats', async (req, res) => {
     console.error('Error fetching chats:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+
+// Абсолютный путь к сборке фронтенда
+const clientPath = path.join(__dirname, '../../client/dist');
+
+// Раздаём статику
+app.use(express.static(clientPath));
+
+// Любой другой GET — отдаём index.html
+app.get('*', (req, res) => {
+  res.sendFile('index.html', { root: clientPath });
 });
 
 // WebSocket manager
