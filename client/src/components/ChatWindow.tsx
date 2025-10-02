@@ -121,9 +121,7 @@ export function ChatWindow({
     );
   }
 
-  const typingUsersList = Array.from(typingUsers)
-    .map(userId => ({ id: userId, username: 'Someone', isOnline: true }))
-    .filter(user => user.id !== currentUser.id);
+  const typingUsersList = otherUser && typingUsers.has(otherUser.id) ? [otherUser] : [];
 
   return (
     <div className={styles.root} {...swipeHandlers}>

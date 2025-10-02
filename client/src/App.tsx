@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Message, ChatState, PresenceData, TypingData, ChatSummary } from './types';
 import { apiClient } from './lib/api';
 import { socketClient } from './lib/socket';
@@ -155,7 +155,7 @@ function App() {
   //   });
   // };
 
-  const handleUserSelect = async (userId: string) => {
+  const handleUserSelect = useCallback(async (userId: string) => {
     if (chatState.currentChatUserId === userId) return;
 
     setChatState(prev => ({ ...prev, currentChatUserId: userId, messages: [] }));
@@ -170,7 +170,7 @@ function App() {
       console.error('Error loading messages:', error);
       setError('Не удалось загрузить сообщения');
     }
-  };
+  }, [chatState.currentChatUserId, setChatState, setChats]);
 
   // Back navigation handled solely via menu toggle and routing
 
@@ -185,7 +185,7 @@ function App() {
     if (chatState.currentChatUserId !== chatIdFromPath) {
       handleUserSelect(chatIdFromPath);
     }
-  }, [chatIdFromPath]);
+  }, [chatIdFromPath, chatState.currentChatUserId, handleUserSelect]);
 
   // On mobile, ensure root routes go to /chats; also clear selection on /users
   useEffect(() => {
@@ -195,7 +195,7 @@ function App() {
     if (isMobile && location.pathname === '/users') {
       setChatState(prev => ({ ...prev, currentChatUserId: null, messages: [] }));
     }
-  }, [isMobile, location.pathname]);
+  }, [isMobile, location.pathname, navigate]);
 
   // WebSocket event handlers
   useEffect(() => {
@@ -208,7 +208,7 @@ function App() {
       setChatState(prev => ({ ...prev, isConnected: false }));
     };
 
-    const handleError = (error: any) => {
+    const handleError = (error: unknown) => {
       console.error('Socket error:', error);
       setError('Ошибка подключения');
     };
@@ -286,7 +286,7 @@ function App() {
       socketClient.off('presence');
       socketClient.off('typing');
     };
-  }, [chatState.currentUser?.id, chatState.currentChatUserId]);
+  }, [chatState.currentUser?.id, chatState.currentChatUserId, chatState.users]);
 
   // Show auth forms if not authenticated
   if (!chatState.currentUser) {

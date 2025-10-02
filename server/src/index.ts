@@ -4,8 +4,9 @@ import { createServer } from 'http';
 import WebSocket from 'ws';
 import { SocketManager } from './sockets';
 import { store } from './store';
-import { ChatSummary } from './types';
+import { ChatSummary, User } from './types';
 import { verifyToken, registerUser, loginUser } from './auth';
+import path from 'path';
 
 const app = express();
 const server = createServer(app);
@@ -14,6 +15,13 @@ const wss = new WebSocket.Server({ server });
 // Middleware
 app.use(cors());
 app.use(express.json());
+// Helpers
+function toPublicUser(user: User): Omit<User, 'password'> {
+  const copy = { ...user } as User & { password?: string };
+  delete copy.password;
+  return copy as Omit<User, 'password'>;
+}
+
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -86,7 +94,7 @@ app.get('/users', (req, res) => {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
-    const users = store.getAllUsers();
+    const users = store.getAllUsers().map(toPublicUser);
     res.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -144,7 +152,10 @@ app.get('/chats', (req, res) => {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
-    const chats: ChatSummary[] = store.getChatSummariesForUser(userId);
+    const chats: ChatSummary[] = store.getChatSummariesForUser(userId).map((c) => ({
+      ...c,
+      otherUser: toPublicUser(c.otherUser),
+    }));
     res.json(chats);
   } catch (error) {
     console.error('Error fetching chats:', error);
@@ -153,7 +164,7 @@ app.get('/chats', (req, res) => {
 });
 
 // Initialize socket manager
-const socketManager = new SocketManager(wss);
+new SocketManager(wss);
 
 // Start server
 const PORT = process.env.PORT || 3001;
@@ -179,3 +190,15 @@ process.on('SIGINT', () => {
     process.exit(0);
   });
 });
+
+// Serve static client in production if CLIENT_BUILD_DIR is present
+try {
+  const clientDir = process.env.CLIENT_BUILD_DIR || path.join(__dirname, '../../client/dist');
+  app.use(express.static(clientDir));
+  // SPA fallback
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientDir, 'index.html'));
+  });
+} catch (e) {
+  // noop in dev or if client not built
+}

@@ -39,7 +39,7 @@ export interface RegisterRequest {
 
 export interface WebSocketMessage {
   type: 'message:send' | 'message:new' | 'presence' | 'typing' | 'error';
-  data: any;
+  data: unknown;
 }
 
 export interface TypingData {

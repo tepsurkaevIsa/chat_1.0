@@ -6,49 +6,7 @@ class Store {
   private messages: Message[] = [];
   private onlineUsers: Set<string> = new Set();
 
-  constructor() {
-    // Initialize with demo users
-    this.initializeDemoUsers();
-  }
-
-  private initializeDemoUsers() {
-    const demoUsers = [
-      { 
-        id: '1', 
-        username: 'Alice', 
-        isOnline: false, 
-        createdAt: new Date('2024-01-01') 
-      },
-      { 
-        id: '2', 
-        username: 'Bob', 
-        isOnline: false, 
-        createdAt: new Date('2024-01-01') 
-      },
-      { 
-        id: '3', 
-        username: 'Charlie', 
-        isOnline: false, 
-        createdAt: new Date('2024-01-01') 
-      },
-      { 
-        id: '4', 
-        username: 'Diana', 
-        isOnline: false, 
-        createdAt: new Date('2024-01-01') 
-      },
-      { 
-        id: '5', 
-        username: 'Eve', 
-        isOnline: false, 
-        createdAt: new Date('2024-01-01') 
-      },
-    ];
-
-    demoUsers.forEach(user => {
-      this.users.set(user.id, user);
-    });
-  }
+  constructor() {}
 
   // User management
   addUser(username: string, password?: string): User {

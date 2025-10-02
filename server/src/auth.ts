@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { User, AuthResponse, LoginRequest, RegisterRequest } from './types';
+import { User, AuthResponse } from './types';
 import { store } from './store';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -41,10 +41,12 @@ export async function registerUser(username: string, password: string): Promise<
 
   const token = generateToken(user.id);
   
+  const publicUser = { ...(user as User) } as User & { password?: string };
+  delete publicUser.password;
   return {
     token,
     user: {
-      ...user,
+      ...publicUser,
       isOnline: true,
     },
   };
@@ -73,10 +75,12 @@ export async function loginUser(username: string, password: string): Promise<Aut
 
   const token = generateToken(user.id);
   
+  const publicUser = { ...(user as User) } as User & { password?: string };
+  delete publicUser.password;
   return {
     token,
     user: {
-      ...user,
+      ...publicUser,
       isOnline: true,
     },
   };

@@ -10,12 +10,19 @@ const ws_1 = __importDefault(require("ws"));
 const sockets_1 = require("./sockets");
 const store_1 = require("./store");
 const auth_1 = require("./auth");
+const path_1 = __importDefault(require("path"));
 const app = (0, express_1.default)();
 const server = (0, http_1.createServer)(app);
 const wss = new ws_1.default.Server({ server });
 // Middleware
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+// Helpers
+function toPublicUser(user) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...publicUser } = user;
+    return publicUser;
+}
 // Health check endpoint
 app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
@@ -75,7 +82,7 @@ app.get('/users', (req, res) => {
         if (!userId) {
             return res.status(401).json({ error: 'Invalid token' });
         }
-        const users = store_1.store.getAllUsers();
+        const users = store_1.store.getAllUsers().map(toPublicUser);
         res.json(users);
     }
     catch (error) {
@@ -125,7 +132,10 @@ app.get('/chats', (req, res) => {
         if (!userId) {
             return res.status(401).json({ error: 'Invalid token' });
         }
-        const chats = store_1.store.getChatSummariesForUser(userId);
+        const chats = store_1.store.getChatSummariesForUser(userId).map((c) => ({
+            ...c,
+            otherUser: toPublicUser(c.otherUser),
+        }));
         res.json(chats);
     }
     catch (error) {
@@ -157,3 +167,15 @@ process.on('SIGINT', () => {
         process.exit(0);
     });
 });
+// Serve static client in production if CLIENT_BUILD_DIR is present
+try {
+    const clientDir = process.env.CLIENT_BUILD_DIR || path_1.default.join(__dirname, '../../client/dist');
+    app.use(express_1.default.static(clientDir));
+    // SPA fallback
+    app.get('*', (req, res) => {
+        res.sendFile(path_1.default.join(clientDir, 'index.html'));
+    });
+}
+catch (e) {
+    // noop in dev or if client not built
+}

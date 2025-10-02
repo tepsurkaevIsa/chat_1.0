@@ -1,13 +1,8 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { THEME_STORAGE_KEY, ThemeName, getInitialTheme } from '../../config';
+import { ThemeContext } from './themeContext';
 
-interface ThemeContextValue {
-  theme: ThemeName;
-  setTheme: (theme: ThemeName) => void;
-  toggleTheme: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+// ThemeContext is defined in themeContext.ts to keep this file exporting only components
 
 function applyThemeClass(theme: ThemeName) {
   const root = document.documentElement;
@@ -25,7 +20,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     applyThemeClass(theme);
     try {
       localStorage.setItem(THEME_STORAGE_KEY, theme);
-    } catch {}
+    } catch (_e) {
+      void 0;
+    }
   }, [theme]);
 
   // Sync with system preference if user clears storage elsewhere
@@ -37,13 +34,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         if (!stored) {
           setThemeState(media.matches ? 'dark' : 'light');
         }
-      } catch {}
+      } catch (_e) {
+        void 0;
+      }
     };
     media.addEventListener?.('change', handleChange);
     return () => media.removeEventListener?.('change', handleChange);
   }, []);
 
-  const value = useMemo<ThemeContextValue>(() => ({
+  const value = useMemo(() => ({
     theme,
     setTheme: setThemeState,
     toggleTheme: () => setThemeState(prev => (prev === 'dark' ? 'light' : 'dark')),
@@ -52,10 +51,4 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
-}
-
-export function useTheme(): ThemeContextValue {
-  const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error('useTheme must be used within ThemeProvider');
-  return ctx;
 }

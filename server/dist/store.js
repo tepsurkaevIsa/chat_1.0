@@ -7,45 +7,6 @@ class Store {
         this.users = new Map();
         this.messages = [];
         this.onlineUsers = new Set();
-        // Initialize with demo users
-        this.initializeDemoUsers();
-    }
-    initializeDemoUsers() {
-        const demoUsers = [
-            {
-                id: '1',
-                username: 'Alice',
-                isOnline: false,
-                createdAt: new Date('2024-01-01')
-            },
-            {
-                id: '2',
-                username: 'Bob',
-                isOnline: false,
-                createdAt: new Date('2024-01-01')
-            },
-            {
-                id: '3',
-                username: 'Charlie',
-                isOnline: false,
-                createdAt: new Date('2024-01-01')
-            },
-            {
-                id: '4',
-                username: 'Diana',
-                isOnline: false,
-                createdAt: new Date('2024-01-01')
-            },
-            {
-                id: '5',
-                username: 'Eve',
-                isOnline: false,
-                createdAt: new Date('2024-01-01')
-            },
-        ];
-        demoUsers.forEach(user => {
-            this.users.set(user.id, user);
-        });
     }
     // User management
     addUser(username, password) {

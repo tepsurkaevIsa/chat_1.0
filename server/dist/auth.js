@@ -40,10 +40,11 @@ async function registerUser(username, password) {
     // Set user as online
     store_1.store.setUserOnline(user.id, true);
     const token = generateToken(user.id);
+    const { password: _pw, ...publicUser } = user;
     return {
         token,
         user: {
-            ...user,
+            ...publicUser,
             isOnline: true,
         },
     };
@@ -66,10 +67,11 @@ async function loginUser(username, password) {
     // Set user as online
     store_1.store.setUserOnline(user.id, true);
     const token = generateToken(user.id);
+    const { password: _pw, ...publicUser } = user;
     return {
         token,
         user: {
-            ...user,
+            ...publicUser,
             isOnline: true,
         },
     };

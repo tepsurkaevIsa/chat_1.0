@@ -4,7 +4,7 @@ import { WS_URL } from '../config';
 class SocketClient {
   private ws: WebSocket | null = null;
   private token: string | null = null;
-  private messageHandlers: Map<string, (data: any) => void> = new Map();
+  private messageHandlers: Map<string, (data: unknown) => void> = new Map();
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000;
@@ -74,14 +74,14 @@ class SocketClient {
     }
   }
 
-  private emit(type: string, data: any) {
+  private emit(type: string, data: unknown) {
     const handler = this.messageHandlers.get(type);
     if (handler) {
       handler(data);
     }
   }
 
-  on(type: string, handler: (data: any) => void) {
+  on(type: string, handler: (data: unknown) => void) {
     this.messageHandlers.set(type, handler);
   }
 

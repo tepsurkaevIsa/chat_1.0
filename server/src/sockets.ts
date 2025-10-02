@@ -126,13 +126,13 @@ export class SocketManager {
     // Rate limiting: max 5 messages per second
     // This is a simple implementation - in production you'd want more sophisticated rate limiting
     const now = Date.now();
-    const userKey = `rate_${ws.userId}`;
-    const lastMessage = (ws as any)[userKey] || 0;
+    const userKey = `rate_${ws.userId}` as const;
+    const lastMessage = (ws as Record<string, unknown>)[userKey] as number || 0;
     if (now - lastMessage < 200) { // 200ms = 5 messages per second
       this.sendError(ws, 'Rate limit exceeded');
       return;
     }
-    (ws as any)[userKey] = now;
+    (ws as Record<string, unknown>)[userKey] = now;
 
     // Add message to store
     const message = store.addMessage(ws.userId, data.to, data.text);
