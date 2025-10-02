@@ -230,6 +230,8 @@ function App() {
       const currentUserId = chatState.currentUser?.id;
       if (!currentUserId) return;
       const otherUserId = message.senderId === currentUserId ? message.receiverId : message.senderId;
+      // Если пользователь ещё не в кэше, позже дернём loadChats(), чтобы новый чат отобразился сразу
+      const otherUserInCache = chatState.users.find(u => u.id === otherUserId);
       setChats(prev => {
         const existing = prev.find(c => c.otherUser.id === otherUserId);
         const isActive = chatState.currentChatUserId === otherUserId;
@@ -244,6 +246,12 @@ function App() {
           return [{ otherUser, lastMessage: message, unreadCount }, ...prev];
         }
       });
+
+      // Нет данных о собеседнике — подгружаем список чатов с сервера.
+      // Это позволит сразу добавить новый чат без перезагрузки страницы.
+      if (!otherUserInCache) {
+        void loadChats();
+      }
     };
 
     const handlePresence = (data: PresenceData) => {
@@ -286,7 +294,8 @@ function App() {
       socketClient.off('presence');
       socketClient.off('typing');
     };
-  }, [chatState.currentUser?.id, chatState.currentChatUserId]);
+  // Включаем users, чтобы обработчик видел актуальный список пользователей
+  }, [chatState.currentUser?.id, chatState.currentChatUserId, chatState.users]);
 
   // Show auth forms if not authenticated
   if (!chatState.currentUser) {
