@@ -17,10 +17,15 @@ const wss = new WebSocket.Server({ server });
 app.use(cors());
 app.use(express.json());
 
-// Раздача фронтенда React (SPA)
-app.use(express.static(path.join('../client/dist')));
+// Абсолютный путь к сборке фронтенда
+const clientPath = path.join(__dirname, '../../client/dist');
+
+// Раздаём статику
+app.use(express.static(clientPath));
+
+// Любой другой GET — отдаём index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join('../client/dist/index.html'));
+  res.sendFile('index.html', { root: clientPath });
 });
 
 // Health check
