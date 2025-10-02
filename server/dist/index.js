@@ -10,6 +10,7 @@ const ws_1 = __importDefault(require("ws"));
 const sockets_1 = require("./sockets");
 const store_1 = require("./store");
 const auth_1 = require("./auth");
+const db_1 = require("./db");
 const app = (0, express_1.default)();
 const server = (0, http_1.createServer)(app);
 const wss = new ws_1.default.Server({ server });
@@ -135,23 +136,31 @@ app.get('/chats', async (req, res) => {
 const socketManager = new sockets_1.SocketManager(wss);
 // Start server
 const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📡 WebSocket server ready`);
-    // Demo users log removed
-});
+(async () => {
+    try {
+        await db_1.prisma.$connect();
+        server.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT}`);
+            console.log(`📡 WebSocket server ready`);
+        });
+    }
+    catch (error) {
+        console.error('Failed to connect to database', error);
+        process.exit(1);
+    }
+})();
 // Graceful shutdown
 process.on('SIGTERM', () => {
     console.log('SIGTERM received, shutting down gracefully');
     server.close(() => {
         console.log('Server closed');
-        process.exit(0);
+        db_1.prisma.$disconnect().finally(() => process.exit(0));
     });
 });
 process.on('SIGINT', () => {
     console.log('SIGINT received, shutting down gracefully');
     server.close(() => {
         console.log('Server closed');
-        process.exit(0);
+        db_1.prisma.$disconnect().finally(() => process.exit(0));
     });
 });

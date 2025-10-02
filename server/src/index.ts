@@ -6,6 +6,7 @@ import { SocketManager } from './sockets';
 import { store } from './store';
 import { ChatSummary } from './types';
 import { verifyToken, registerUser, loginUser } from './auth';
+import { prisma } from './db';
 
 const app = express();
 const server = createServer(app);
@@ -154,18 +155,25 @@ const socketManager = new SocketManager(wss);
 
 // Start server
 const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📡 WebSocket server ready`);
-  // Demo users log removed
-});
+(async () => {
+  try {
+    await prisma.$connect();
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📡 WebSocket server ready`);
+    });
+  } catch (error) {
+    console.error('Failed to connect to database', error);
+    process.exit(1);
+  }
+})();
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
   server.close(() => {
     console.log('Server closed');
-    process.exit(0);
+    prisma.$disconnect().finally(() => process.exit(0));
   });
 });
 
@@ -173,6 +181,6 @@ process.on('SIGINT', () => {
   console.log('SIGINT received, shutting down gracefully');
   server.close(() => {
     console.log('Server closed');
-    process.exit(0);
+    prisma.$disconnect().finally(() => process.exit(0));
   });
 });
