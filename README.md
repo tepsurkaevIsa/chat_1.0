@@ -9,7 +9,7 @@
 - WebSocket (ws)
 - TypeScript
 - JWT для аутентификации
-- In-memory хранилище
+- Prisma ORM + PostgreSQL
 
 ### Frontend
 - React + Vite
@@ -72,6 +72,30 @@ npm run start:server  # в одном терминале
 npm run start:client  # в другом терминале
 ```
 
+## База данных (PostgreSQL)
+
+Проект использует PostgreSQL через Prisma ORM.
+
+1. Настройте переменные окружения:
+   - Скопируйте `server/.env.example` в `server/.env`
+   - Проверьте `DATABASE_URL` (пример локальный: `postgresql://postgres:postgres@localhost:5432/chat_app?schema=public`)
+
+2. Запустите PostgreSQL (любой способ):
+   - Docker Compose в корне проекта: `docker compose up -d postgres`
+   - Или укажите свои реквизиты подключения в `server/.env`
+
+3. Примените миграции и сгенерируйте клиент:
+```bash
+cd server
+npx prisma generate
+npx prisma migrate dev --name init
+```
+
+4. Запустите сервер:
+```bash
+npm run dev
+```
+
 ## API
 
 ### REST Endpoints
@@ -123,7 +147,7 @@ npm run start:client  # в другом терминале
 
 ## Особенности
 
-- **In-memory хранилище**: данные теряются при перезапуске сервера
+- **PostgreSQL**: хранение данных в реальной базе
 - **Безопасная авторизация**: bcrypt хеширование паролей
 - **JWT токены**: 24-часовые токены доступа
 - **Rate limiting**: максимум 5 сообщений в секунду
