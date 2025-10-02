@@ -45,17 +45,17 @@ export class SocketManager {
       this.clients.set(userId, ws);
       
       // Set user as online
-      store.setUserOnline(userId, true);
+      void store.setUserOnline(userId, true).catch((err) => console.error('Failed to set user online:', err));
       this.broadcastPresence(userId, true);
 
       // Send recent messages to the user
-      this.sendRecentMessages(ws, userId);
+      void this.sendRecentMessages(ws, userId);
 
       // Handle messages
       ws.on('message', (data) => {
         try {
           const message: WebSocketMessage = JSON.parse(data.toString());
-          this.handleMessage(ws, message);
+          void this.handleMessage(ws, message);
         } catch (error) {
           console.error('Error parsing WebSocket message:', error);
           this.sendError(ws, 'Invalid message format');
@@ -66,7 +66,7 @@ export class SocketManager {
       ws.on('close', () => {
         if (ws.userId) {
           this.clients.delete(ws.userId);
-          store.setUserOnline(ws.userId, false);
+          void store.setUserOnline(ws.userId, false).catch((err) => console.error('Failed to set user offline:', err));
           this.broadcastPresence(ws.userId, false);
           this.typingUsers.delete(ws.userId);
         }
@@ -102,12 +102,12 @@ export class SocketManager {
     return urlObj.searchParams.get('token');
   }
 
-  private handleMessage(ws: AuthenticatedWebSocket, message: WebSocketMessage) {
+  private async handleMessage(ws: AuthenticatedWebSocket, message: WebSocketMessage) {
     if (!ws.userId) return;
 
     switch (message.type) {
       case 'message:send':
-        this.handleSendMessage(ws, message.data);
+        await this.handleSendMessage(ws, message.data);
         break;
       case 'typing':
         this.handleTyping(ws, message.data);
@@ -117,7 +117,7 @@ export class SocketManager {
     }
   }
 
-  private handleSendMessage(ws: AuthenticatedWebSocket, data: { to: string; text: string }) {
+  private async handleSendMessage(ws: AuthenticatedWebSocket, data: { to: string; text: string }) {
     if (!ws.userId || !data.to || !data.text) {
       this.sendError(ws, 'Invalid message data');
       return;
@@ -135,7 +135,7 @@ export class SocketManager {
     (ws as any)[userKey] = now;
 
     // Add message to store
-    const message = store.addMessage(ws.userId, data.to, data.text);
+    const message = await store.addMessage(ws.userId, data.to, data.text);
 
     // Send to sender (confirmation)
     this.sendMessage(ws, {
@@ -185,8 +185,8 @@ export class SocketManager {
     }
   }
 
-  private sendRecentMessages(ws: AuthenticatedWebSocket, userId: string) {
-    const recentMessages = store.getRecentMessages(userId, 20);
+  private async sendRecentMessages(ws: AuthenticatedWebSocket, userId: string) {
+    const recentMessages = await store.getRecentMessages(userId, 20);
     recentMessages.forEach(message => {
       this.sendMessage(ws, {
         type: 'message:new',

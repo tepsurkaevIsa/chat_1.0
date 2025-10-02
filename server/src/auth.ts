@@ -20,7 +20,7 @@ export function verifyToken(token: string): string | null {
 
 export async function registerUser(username: string, password: string): Promise<AuthResponse> {
   // Check if user already exists
-  const existingUser = store.getUserByUsername(username);
+  const existingUser = await store.getUserByUsername(username);
   if (existingUser) {
     throw new Error('User already exists');
   }
@@ -34,10 +34,10 @@ export async function registerUser(username: string, password: string): Promise<
   const hashedPassword = await bcrypt.hash(password, 10);
 
   // Create new user
-  const user = store.addUser(username, hashedPassword);
+  const user = await store.addUser(username, hashedPassword);
 
   // Set user as online
-  store.setUserOnline(user.id, true);
+  await store.setUserOnline(user.id, true);
 
   const token = generateToken(user.id);
   
@@ -52,7 +52,7 @@ export async function registerUser(username: string, password: string): Promise<
 
 export async function loginUser(username: string, password: string): Promise<AuthResponse> {
   // Find user
-  const user = store.getUserByUsername(username);
+  const user = await store.getUserByUsername(username);
   if (!user) {
     throw new Error('Invalid username or password');
   }
@@ -69,7 +69,7 @@ export async function loginUser(username: string, password: string): Promise<Aut
   }
 
   // Set user as online
-  store.setUserOnline(user.id, true);
+  await store.setUserOnline(user.id, true);
 
   const token = generateToken(user.id);
   
