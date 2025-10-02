@@ -17,13 +17,15 @@ const wss = new WebSocket.Server({ server });
 app.use(cors());
 app.use(express.json());
 
+// ---------------- API ROUTES ---------------- //
+
 // Health check
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
 // Registration
-app.post('/auth/register', async (req, res) => {
+app.post('/api/auth/register', async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password || username.trim().length === 0 || password.length === 0) {
@@ -41,7 +43,7 @@ app.post('/auth/register', async (req, res) => {
 });
 
 // Login
-app.post('/auth/login', async (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
@@ -55,7 +57,7 @@ app.post('/auth/login', async (req, res) => {
 });
 
 // Users
-app.get('/users', async (req, res) => {
+app.get('/api/users', async (req, res) => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '');
     if (!token) return res.status(401).json({ error: 'Authentication required' });
@@ -72,7 +74,7 @@ app.get('/users', async (req, res) => {
 });
 
 // Messages
-app.get('/messages/:peerId', async (req, res) => {
+app.get('/api/messages/:peerId', async (req, res) => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '');
     if (!token) return res.status(401).json({ error: 'Authentication required' });
@@ -85,6 +87,7 @@ app.get('/messages/:peerId', async (req, res) => {
     const before = req.query.before ? new Date(req.query.before as string) : undefined;
 
     const messages = await store.getMessagesBetweenUsers(userId, peerId, limit, before);
+
     await Promise.all(messages.map(msg => {
       if (msg.receiverId === userId && !msg.readAt) return store.markMessageAsRead(msg.id, userId);
       return Promise.resolve();
@@ -98,7 +101,7 @@ app.get('/messages/:peerId', async (req, res) => {
 });
 
 // Chat summaries
-app.get('/chats', async (req, res) => {
+app.get('/api/chats', async (req, res) => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '');
     if (!token) return res.status(401).json({ error: 'Authentication required' });
@@ -114,6 +117,7 @@ app.get('/chats', async (req, res) => {
   }
 });
 
+// ---------------- FRONTEND ---------------- //
 
 // Абсолютный путь к сборке фронтенда
 const clientPath = path.join(__dirname, '../../client/dist');
@@ -121,16 +125,17 @@ const clientPath = path.join(__dirname, '../../client/dist');
 // Раздаём статику
 app.use(express.static(clientPath));
 
-// Любой другой GET — отдаём index.html
-app.get('*', (req, res) => {
+// Любой другой GET (не начинающийся с /api) — отдаём index.html
+app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile('index.html', { root: clientPath });
 });
 
-// WebSocket manager
+// ---------------- WebSocket ---------------- //
 const socketManager = new SocketManager(wss);
 
-// Start server
+// ---------------- SERVER ---------------- //
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
+
 (async () => {
   try {
     await prisma.$connect();

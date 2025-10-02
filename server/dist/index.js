@@ -18,12 +18,13 @@ const wss = new ws_1.default.Server({ server });
 // Middleware
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+// ---------------- API ROUTES ---------------- //
 // Health check
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 // Registration
-app.post('/auth/register', async (req, res) => {
+app.post('/api/auth/register', async (req, res) => {
     try {
         const { username, password } = req.body;
         if (!username || !password || username.trim().length === 0 || password.length === 0) {
@@ -42,7 +43,7 @@ app.post('/auth/register', async (req, res) => {
     }
 });
 // Login
-app.post('/auth/login', async (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
     try {
         const { username, password } = req.body;
         if (!username || !password)
@@ -56,7 +57,7 @@ app.post('/auth/login', async (req, res) => {
     }
 });
 // Users
-app.get('/users', async (req, res) => {
+app.get('/api/users', async (req, res) => {
     try {
         const token = req.headers.authorization?.replace('Bearer ', '');
         if (!token)
@@ -73,7 +74,7 @@ app.get('/users', async (req, res) => {
     }
 });
 // Messages
-app.get('/messages/:peerId', async (req, res) => {
+app.get('/api/messages/:peerId', async (req, res) => {
     try {
         const token = req.headers.authorization?.replace('Bearer ', '');
         if (!token)
@@ -98,7 +99,7 @@ app.get('/messages/:peerId', async (req, res) => {
     }
 });
 // Chat summaries
-app.get('/chats', async (req, res) => {
+app.get('/api/chats', async (req, res) => {
     try {
         const token = req.headers.authorization?.replace('Bearer ', '');
         if (!token)
@@ -114,17 +115,18 @@ app.get('/chats', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+// ---------------- FRONTEND ---------------- //
 // Абсолютный путь к сборке фронтенда
 const clientPath = path_1.default.join(__dirname, '../../client/dist');
 // Раздаём статику
 app.use(express_1.default.static(clientPath));
-// Любой другой GET — отдаём index.html
-app.get('*', (req, res) => {
+// Любой другой GET (не начинающийся с /api) — отдаём index.html
+app.get(/^\/(?!api).*/, (req, res) => {
     res.sendFile('index.html', { root: clientPath });
 });
-// WebSocket manager
+// ---------------- WebSocket ---------------- //
 const socketManager = new sockets_1.SocketManager(wss);
-// Start server
+// ---------------- SERVER ---------------- //
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 (async () => {
     try {
