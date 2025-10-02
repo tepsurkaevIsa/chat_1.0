@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import WebSocket from 'ws';
+import path from 'path';
 import { SocketManager } from './sockets';
 import { store } from './store';
 import { ChatSummary } from './types';
@@ -16,76 +17,57 @@ const wss = new WebSocket.Server({ server });
 app.use(cors());
 app.use(express.json());
 
-// Health check endpoint
+// Раздача фронтенда React (SPA)
+app.use(express.static(path.join('../client/dist')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join('../client/dist/index.html'));
+});
+
+// Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Registration endpoint
+// Registration
 app.post('/auth/register', async (req, res) => {
   try {
     const { username, password } = req.body;
-    
-    if (!username || typeof username !== 'string' || username.trim().length === 0) {
-      return res.status(400).json({ error: 'Username is required' });
+    if (!username || !password || username.trim().length === 0 || password.length === 0) {
+      return res.status(400).json({ error: 'Username and password are required' });
     }
-
-    if (!password || typeof password !== 'string' || password.length === 0) {
-      return res.status(400).json({ error: 'Password is required' });
-    }
-
-    if (username.length > 20) {
-      return res.status(400).json({ error: 'Username too long (max 20 characters)' });
-    }
-
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
-    }
+    if (username.length > 20) return res.status(400).json({ error: 'Username too long (max 20 chars)' });
+    if (password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 chars' });
 
     const authResponse = await registerUser(username.trim(), password);
     res.json(authResponse);
   } catch (error) {
     console.error('Registration error:', error);
-    const message = error instanceof Error ? error.message : 'Internal server error';
-    res.status(400).json({ error: message });
+    res.status(400).json({ error: (error instanceof Error ? error.message : 'Internal server error') });
   }
 });
 
-// Login endpoint
+// Login
 app.post('/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    
-    if (!username || typeof username !== 'string' || username.trim().length === 0) {
-      return res.status(400).json({ error: 'Username is required' });
-    }
-
-    if (!password || typeof password !== 'string' || password.length === 0) {
-      return res.status(400).json({ error: 'Password is required' });
-    }
+    if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
 
     const authResponse = await loginUser(username.trim(), password);
     res.json(authResponse);
   } catch (error) {
     console.error('Login error:', error);
-    const message = error instanceof Error ? error.message : 'Internal server error';
-    res.status(401).json({ error: message });
+    res.status(401).json({ error: (error instanceof Error ? error.message : 'Internal server error') });
   }
 });
 
-
-// Get all users
+// Users
 app.get('/users', async (req, res) => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
+    if (!token) return res.status(401).json({ error: 'Authentication required' });
 
     const userId = verifyToken(token);
-    if (!userId) {
-      return res.status(401).json({ error: 'Invalid token' });
-    }
+    if (!userId) return res.status(401).json({ error: 'Invalid token' });
 
     const users = await store.getAllUsers();
     res.json(users);
@@ -95,30 +77,22 @@ app.get('/users', async (req, res) => {
   }
 });
 
-// Get messages between two users
+// Messages
 app.get('/messages/:peerId', async (req, res) => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
+    if (!token) return res.status(401).json({ error: 'Authentication required' });
 
     const userId = verifyToken(token);
-    if (!userId) {
-      return res.status(401).json({ error: 'Invalid token' });
-    }
+    if (!userId) return res.status(401).json({ error: 'Invalid token' });
 
     const { peerId } = req.params;
     const limit = parseInt(req.query.limit as string) || 50;
     const before = req.query.before ? new Date(req.query.before as string) : undefined;
 
     const messages = await store.getMessagesBetweenUsers(userId, peerId, limit, before);
-
-    // Mark messages as read for the authenticated user
     await Promise.all(messages.map(msg => {
-      if (msg.receiverId === userId && !msg.readAt) {
-        return store.markMessageAsRead(msg.id, userId);
-      }
+      if (msg.receiverId === userId && !msg.readAt) return store.markMessageAsRead(msg.id, userId);
       return Promise.resolve();
     }));
 
@@ -129,18 +103,14 @@ app.get('/messages/:peerId', async (req, res) => {
   }
 });
 
-// Get chat summaries for the authenticated user
+// Chat summaries
 app.get('/chats', async (req, res) => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
+    if (!token) return res.status(401).json({ error: 'Authentication required' });
 
     const userId = verifyToken(token);
-    if (!userId) {
-      return res.status(401).json({ error: 'Invalid token' });
-    }
+    if (!userId) return res.status(401).json({ error: 'Invalid token' });
 
     const chats: ChatSummary[] = await store.getChatSummariesForUser(userId);
     res.json(chats);
@@ -150,15 +120,15 @@ app.get('/chats', async (req, res) => {
   }
 });
 
-// Initialize socket manager
+// WebSocket manager
 const socketManager = new SocketManager(wss);
 
 // Start server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 (async () => {
   try {
     await prisma.$connect();
-    server.listen(PORT, () => {
+    server.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📡 WebSocket server ready`);
     });
@@ -169,18 +139,13 @@ const PORT = process.env.PORT || 3001;
 })();
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
+const shutdown = () => {
+  console.log('Shutting down gracefully...');
   server.close(() => {
     console.log('Server closed');
     prisma.$disconnect().finally(() => process.exit(0));
   });
-});
+};
 
-process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully');
-  server.close(() => {
-    console.log('Server closed');
-    prisma.$disconnect().finally(() => process.exit(0));
-  });
-});
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);

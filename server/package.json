@@ -4,7 +4,7 @@
   "description": "MVP Chat Server",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npx prisma generate --schema=prisma/schema.prisma",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "lint": "eslint src/**/*.ts",
