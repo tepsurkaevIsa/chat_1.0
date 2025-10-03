@@ -3,6 +3,8 @@ import { ChatSummary, User } from '../types';
 import { Plus, Users, Search } from 'lucide-react';
 import { ThemeToggle } from './ui/ThemeToggle';
 import styles from './ChatsSidebar.module.css';
+import { Avatar } from './ui/Avatar';
+import { SearchInput } from './ui/SearchInput';
 
 interface ChatsSidebarProps {
   chats: ChatSummary[];
@@ -25,9 +27,7 @@ export function ChatsSidebar({ chats, currentUser, currentChatUserId, onChatSele
     <div className={styles.root}>
       <div className={styles.header}>
         <div className={styles.headerRow}>
-          <div className={styles.avatar}>
-            {currentUser.username.charAt(0).toUpperCase()}
-          </div>
+          <Avatar name={currentUser.username} variant="primary" />
           <div className={styles.userBlock}>
             <h2 className={styles.userName}>{currentUser.username}</h2>
             <p className={styles.online}>В сети</p>
@@ -45,16 +45,12 @@ export function ChatsSidebar({ chats, currentUser, currentChatUserId, onChatSele
       </div>
 
       <div className={styles.search}>
-        <div className={styles.searchWrap}>
-          <Search className={styles.searchIcon} width={16} height={16} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Поиск по чатам..."
-            className={styles.searchInput}
-          />
-        </div>
+        <SearchInput
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Поиск по чатам..."
+          icon={<Search width={16} height={16} />}
+        />
       </div>
 
       <div className={styles.list}>
@@ -68,14 +64,7 @@ export function ChatsSidebar({ chats, currentUser, currentChatUserId, onChatSele
                 onClick={() => onChatSelect(otherUser.id)}
                 className={`${styles.item} ${currentChatUserId === otherUser.id ? styles.itemActive : ''}`}
               >
-                <div className={styles.avatarWrap}>
-                  <div className={styles.avatarSm}>
-                    {otherUser.username.charAt(0).toUpperCase()}
-                  </div>
-                  {otherUser.isOnline && (
-                    <div className={styles.onlineDot}></div>
-                  )}
-                </div>
+                <Avatar name={otherUser.username} online={otherUser.isOnline} size="md" />
                 <div className={styles.itemText}>
                   <div className={styles.itemTop}>
                     <h4 className={styles.itemName}>{otherUser.username}</h4>

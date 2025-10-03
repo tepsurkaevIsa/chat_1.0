@@ -4,6 +4,8 @@ import { User } from '../types';
 import { Users, MessageCircle, Search } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import { ThemeToggle } from './ui/ThemeToggle';
+import { Avatar } from './ui/Avatar';
+import { SearchInput } from './ui/SearchInput';
 
 interface SidebarProps {
   users: User[];
@@ -26,9 +28,7 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
     <div className={styles.root}>
       <div className={styles.header}>
         <div className={styles.headerRow}>
-          <div className={styles.avatar}>
-            {currentUser.username.charAt(0).toUpperCase()}
-          </div>
+          <Avatar name={currentUser.username} variant="primary" />
           <div className={styles.userBlock}>
             <h2 className={styles.userName}>{currentUser.username}</h2>
             <p className={styles.online}>В сети</p>
@@ -58,13 +58,11 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
           </div>
 
           <div className={styles.search}>
-            <Search className={styles.searchIcon} />
-            <input
-              type="text"
+            <SearchInput
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Поиск по нику..."
-              className={styles.searchInput}
+              icon={<Search width={16} height={16} />}
             />
           </div>
           
@@ -78,14 +76,7 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
                   onClick={() => onUserSelect(user.id)}
                   className={`${styles.userItem} ${currentChatUserId === user.id ? styles.userItemActive : ''}`}
                 >
-                  <div className={styles.userAvatarWrap}>
-                    <div className={styles.userAvatar}>
-                      {user.username.charAt(0).toUpperCase()}
-                    </div>
-                    {user.isOnline && (
-                      <div className={styles.onlineDot}></div>
-                    )}
-                  </div>
+                  <Avatar name={user.username} online={user.isOnline} size="md" />
                   <div className={styles.itemText}
                   >
                     <div className={styles.userNameRow}>
