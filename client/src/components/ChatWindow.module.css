@@ -43,7 +43,7 @@
 .mobileOnly { display: inline-flex; }
 @media (min-width: 1024px) { .mobileOnly { display: none; } }
 
-.messages { flex: 1; overflow: auto; padding: 0.5rem 0.5rem; display: flex; flex-direction: column; gap: 0.5rem; -webkit-overflow-scrolling: touch; }
+.messages { flex: 1; overflow: auto; padding: 0.5rem 0.5rem; display: flex; flex-direction: column; gap: 0.5rem; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
 @media (min-width: 640px) { .messages { gap: 1rem; padding: 1rem; } }
 .empty { text-align: center; color: var(--color-text-muted); margin-top: 2rem; padding: 0 1rem; }
 .emptyInner { text-align: center; padding: 1rem; }
