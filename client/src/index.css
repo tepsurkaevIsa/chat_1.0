@@ -156,11 +156,11 @@
   /* Touch-friendly button sizes */
   @media (max-width: 640px) {
     button, [role="button"] {
-      min-height: 44px;
+      min-height: 35px;
       min-width: 44px;
     }
     input, textarea {
-      min-height: 44px;
+      min-height: 35px;
     }
   }
 

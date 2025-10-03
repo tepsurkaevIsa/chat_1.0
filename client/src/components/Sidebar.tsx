@@ -53,7 +53,7 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
       <div className={styles.list}>
         <div className={styles.section}>
           <div className={styles.sectionTitleRow}>
-            <Users width={20} height={20} />
+            <Users width={16} height={16} />
             <h3 className={styles.sectionTitle}>Пользователи</h3>
           </div>
 
