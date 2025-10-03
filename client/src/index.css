@@ -62,6 +62,8 @@
   * {
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   }
+  /* Ensure padding/borders don't increase element height beyond set values */
+  *, *::before, *::after { box-sizing: border-box; }
   /* Avoid color/background transitions on theme toggle to prevent flicker */
   html.dark *, html:not(.dark) * {
     transition-property: border-color, box-shadow;
@@ -73,6 +75,7 @@
   html {
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
   }
 
   body {
@@ -94,7 +97,7 @@
     height: 100lvh;
     height: calc(var(--vh, 1vh) * 100);
   }
-  .keyboard-open { position: fixed; width: 100%; inset: 0; overflow: hidden; }
+  #root { height: 100%; min-height: 0; width: 100%; }
 
   /* Form control base reset tuned for theming */
   :where(input, textarea, select, button) {
