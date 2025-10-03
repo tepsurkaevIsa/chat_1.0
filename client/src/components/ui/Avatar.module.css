@@ -1,0 +1,35 @@
+.root {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 9999px;
+	font-weight: 600;
+	color: #fff;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+	flex-shrink: 0;
+}
+
+/* Sizes */
+.xs { width: 1.1rem; height: 1.1rem; font-size: 0.65rem; }
+.sm { width: 2rem; height: 2rem; font-size: 0.9rem; }
+.md { width: 2.5rem; height: 2.5rem; font-size: 1rem; }
+.lg { width: 3rem; height: 3rem; font-size: 1.125rem; }
+
+/* Variants */
+.neutral { background: #6b7280; }
+.primary { background: var(--color-primary); }
+
+.onlineDot {
+	position: absolute;
+	right: -0.25rem;
+	bottom: -0.25rem;
+	width: 1rem;
+	height: 1rem;
+	background: var(--color-online);
+	border: 2px solid var(--color-surface);
+	border-radius: 9999px;
+}
+
+.dotSm { width: 0.5rem; height: 0.5rem; right: -0.2rem; bottom: -0.2rem; border-width: 1px; }
+

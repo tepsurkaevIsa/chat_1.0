@@ -2,6 +2,7 @@ import { Message as MessageType, User } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import styles from './Message.module.css';
+import { Avatar } from './ui/Avatar';
 
 interface MessageProps {
   message: MessageType;
@@ -18,9 +19,7 @@ export function Message({ message, currentUser, otherUser }: MessageProps) {
     <div className={`${styles.row} ${isOwn ? styles.end : styles.start}`}>
       <div className={`${styles.bubble} ${isOwn ? styles.own : styles.other}`}>
         <div className={styles.meta}>
-          <div className={styles.avatar}>
-            {sender.username.charAt(0).toUpperCase()}
-          </div>
+          <Avatar name={sender.username} size="xs" />
           <span className={styles.sender}>
             {sender.username}
           </span>

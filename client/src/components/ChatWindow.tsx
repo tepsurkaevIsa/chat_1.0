@@ -7,6 +7,7 @@ import { socketClient } from '../lib/socket';
 import { useSwipe } from '../hooks/useSwipe';
 import { ThemeToggle } from './ui/ThemeToggle';
 import styles from './ChatWindow.module.css';
+import { Avatar } from './ui/Avatar';
 
 interface ChatWindowProps {
   currentUser: User;
@@ -130,12 +131,7 @@ export function ChatWindow({
       <div className={styles.header}>
         <div className={styles.headerRow}>
           {/* Back button removed per request */}
-          <div className={styles.avatarWrap}>
-            <div className={styles.avatar}>
-              {otherUser.username.charAt(0).toUpperCase()}
-            </div>
-            {otherUser.isOnline && <div className={styles.onlineDot}></div>}
-          </div>
+          <Avatar name={otherUser.username} online={otherUser.isOnline} />
           <div className={styles.titleWrap}>
             <h2 className={styles.title}>{otherUser.username}</h2>
             <p className={styles.subtitle}>{otherUser.isOnline ? 'В сети' : 'Не в сети'}</p>
