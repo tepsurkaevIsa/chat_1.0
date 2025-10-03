@@ -38,7 +38,7 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
               onClick={() => navigate('/chats')}
               aria-label="К чатам"
               title="К чатам"
-              className={styles.controlBtn}
+              className={`${styles.controlBtn} ${styles.desktopOnly}`}
             >
               <MessageCircle width={20} height={20} />
               <span className={styles.btnText}>Чаты</span>
@@ -98,6 +98,16 @@ export function Sidebar({ users, currentUser, currentChatUserId, onUserSelect }:
           </div>
         </div>
       </div>
+
+      {/* Mobile FAB to go to Chats */}
+      <button
+        onClick={() => navigate('/chats')}
+        className={styles.fab}
+        aria-label="К чатам"
+        title="К чатам"
+      >
+        <MessageCircle width={22} height={22} />
+      </button>
     </div>
   );
 }

@@ -33,7 +33,7 @@ export function ChatsSidebar({ chats, currentUser, currentChatUserId, onChatSele
             <p className={styles.online}>В сети</p>
           </div>
           <div className={styles.controls}>
-            <button onClick={onNewChat} className={styles.newChatBtn} aria-label="Новый чат">
+            <button onClick={onNewChat} className={`${styles.newChatBtn} ${styles.desktopOnly}`} aria-label="Новый чат">
               <Plus width={16} height={16} />
               <Users width={16} height={16} />
             </button>
@@ -79,6 +79,16 @@ export function ChatsSidebar({ chats, currentUser, currentChatUserId, onChatSele
           </div>
         )}
       </div>
+
+      {/* Mobile FAB to go to Users */}
+      <button
+        onClick={onNewChat}
+        className={styles.fab}
+        aria-label="К пользователям"
+        title="К пользователям"
+      >
+        <Users width={22} height={22} />
+      </button>
     </div>
   );
 }
