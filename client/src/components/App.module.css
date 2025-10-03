@@ -81,3 +81,8 @@
 .online { background: #22c55e; }
 .offline { background: #ef4444; }
 
+/* Nudge status dot up on small screens to avoid FAB overlap */
+@media (max-width: 1023.98px) {
+	.statusWrap { bottom: 4.75rem; }
+}
+
