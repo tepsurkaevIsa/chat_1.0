@@ -6,18 +6,35 @@ import App from './App.tsx'
 import { ThemeProvider } from './components/ui/ThemeProvider'
 
 // Handle mobile keyboard: toggle body class to prevent whole-document scrolling
-if (typeof window !== 'undefined' && 'visualViewport' in window) {
-  const vv = (window as any).visualViewport as VisualViewport;
+if (typeof window !== 'undefined') {
   const root = document.documentElement;
-  const onResize = () => {
-    const height = vv.height;
-    const fullHeight = window.innerHeight; // may include UI chrome
-    // Heuristic: if viewport reduced notably, keyboard likely open
-    const keyboardOpen = fullHeight - height > 120; // px threshold
-    root.classList.toggle('keyboard-open', keyboardOpen);
+  const getVv = () => (window as any).visualViewport as VisualViewport | undefined;
+  let lastKeyboardOpen = false;
+  let rafId: number | null = null;
+  const updateKeyboardState = () => {
+    const vv = getVv();
+    const height = vv ? vv.height : window.innerHeight;
+    const fullHeight = window.innerHeight;
+    const keyboardOpen = fullHeight - height > 120;
+    if (keyboardOpen !== lastKeyboardOpen) {
+      root.classList.toggle('keyboard-open', keyboardOpen);
+      lastKeyboardOpen = keyboardOpen;
+    }
   };
-  vv.addEventListener('resize', onResize);
-  window.addEventListener('resize', onResize);
+  const onViewportChange = () => {
+    if (rafId != null) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      updateKeyboardState();
+      rafId = null;
+    });
+  };
+  window.addEventListener('resize', onViewportChange, { passive: true });
+  window.addEventListener('orientationchange', onViewportChange, { passive: true });
+  const vv = getVv();
+  if (vv) {
+    vv.addEventListener('resize', onViewportChange, { passive: true } as any);
+    vv.addEventListener('scroll', onViewportChange, { passive: true } as any);
+  }
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

@@ -85,9 +85,16 @@
   overflow: hidden;
   }
 
-  /* When keyboard opens, avoid document scroll jumps; page compresses instead */
-  html, body { height: calc(var(--vh, 1vh) * 100); }
-  .keyboard-open { position: fixed; width: 100%; }
+  /* Mobile viewport height handling
+     Prefer dvh when available, fall back to JS-updated --vh to avoid iOS UI chrome jumps.
+     Lock layout when keyboard opens to prevent page-level scrolling. */
+  html, body {
+    height: 100dvh;
+    height: 100svh;
+    height: 100lvh;
+    height: calc(var(--vh, 1vh) * 100);
+  }
+  .keyboard-open { position: fixed; width: 100%; inset: 0; overflow: hidden; }
 
   /* Form control base reset tuned for theming */
   :where(input, textarea, select, button) {

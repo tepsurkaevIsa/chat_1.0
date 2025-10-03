@@ -15,14 +15,31 @@
     <div id="root"></div>
     <script>
       (function() {
-        function setVhUnit() {
-          var vh = (window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.01;
-          document.documentElement.style.setProperty('--vh', vh + 'px');
+        var lastHeight = 0;
+        var ticking = false;
+        function computeVh() {
+          var vv = window.visualViewport;
+          var height = vv ? vv.height : window.innerHeight;
+          if (height && Math.abs(height - lastHeight) > 0.5) {
+            lastHeight = height;
+            document.documentElement.style.setProperty('--vh', (height * 0.01) + 'px');
+          }
         }
-        setVhUnit();
-        window.addEventListener('resize', setVhUnit);
+        function onViewportChange() {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(function() {
+              computeVh();
+              ticking = false;
+            });
+          }
+        }
+        computeVh();
+        window.addEventListener('resize', onViewportChange, { passive: true });
+        window.addEventListener('orientationchange', onViewportChange, { passive: true });
         if (window.visualViewport) {
-          window.visualViewport.addEventListener('resize', setVhUnit);
+          window.visualViewport.addEventListener('resize', onViewportChange, { passive: true });
+          window.visualViewport.addEventListener('scroll', onViewportChange, { passive: true });
         }
       })();
     </script>
