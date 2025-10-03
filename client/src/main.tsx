@@ -8,14 +8,13 @@ import { ThemeProvider } from './components/ui/ThemeProvider'
 // Handle mobile keyboard: toggle body class to prevent whole-document scrolling
 if (typeof window !== 'undefined' && 'visualViewport' in window) {
   const vv = (window as any).visualViewport as VisualViewport;
+  const root = document.documentElement;
   const onResize = () => {
     const height = vv.height;
     const fullHeight = window.innerHeight; // may include UI chrome
+    // Heuristic: if viewport reduced notably, keyboard likely open
     const keyboardOpen = fullHeight - height > 120; // px threshold
-    // Ensure html never gets the lock class
-    document.documentElement.classList.remove('keyboard-open');
-    // Lock on body instead to avoid viewport jumps on mobile
-    document.body.classList.toggle('keyboard-open', keyboardOpen);
+    root.classList.toggle('keyboard-open', keyboardOpen);
   };
   vv.addEventListener('resize', onResize);
   window.addEventListener('resize', onResize);
