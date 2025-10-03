@@ -165,7 +165,7 @@ export function ChatWindow({
       </div>
 
       <div className={styles.inputBar}>
-        <form onSubmit={handleSendMessage} className={styles.form}>
+        <form onSubmit={handleSendMessage} className={styles.form} autoComplete="off">
           <input
             type="text"
             value={messageText}
@@ -174,6 +174,13 @@ export function ChatWindow({
             placeholder="Введите сообщение..."
             className={styles.textInput}
             disabled={!otherUser}
+            autoComplete="off"
+            autoCorrect="on"
+            autoCapitalize="sentences"
+            inputMode="text"
+            enterKeyHint="send"
+            name="chat-message"
+            spellCheck={true}
           />
           <button type="submit" disabled={!messageText.trim() || !otherUser} className={styles.sendBtn} aria-label="Отправить">
             <Send width={20} height={20} />
