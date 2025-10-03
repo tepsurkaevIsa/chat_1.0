@@ -86,8 +86,8 @@
   }
 
   /* When keyboard opens, avoid document scroll jumps; page compresses instead */
-  html, body { height: calc(var(--vh, 1vh) * 100); }
-  .keyboard-open { position: fixed; width: 100%; }
+  html, body { height: calc(var(--vh, 1vh) * 100); height: 100dvh; }
+  body.keyboard-open { position: fixed; left: 0; right: 0; top: 0; width: 100%; }
 
   /* Form control base reset tuned for theming */
   :where(input, textarea, select, button) {
