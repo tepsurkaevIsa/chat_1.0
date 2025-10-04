@@ -28,6 +28,8 @@ export function ChatWindow({
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const inputBarRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<number>();
 
   // Swipe gestures for mobile
@@ -68,6 +70,54 @@ export function ChatWindow({
       vv?.removeEventListener('scroll', handleViewportChange);
       window.removeEventListener('resize', handleViewportChange);
       window.removeEventListener('orientationchange', handleViewportChange);
+    };
+  }, []);
+
+  // Adjust CSS var to avoid overlapping input by on-screen keyboard (mobile)
+  useEffect(() => {
+    const vv = (window as any).visualViewport as VisualViewport | undefined;
+    if (!vv) return;
+
+    const updateKbAvoid = () => {
+      const heightDelta = Math.max(0, window.innerHeight - vv.height);
+      const safeBottom = (window as any).CSS?.env ? 0 : 0; // env(safe-area-inset-bottom) handled in CSS
+      const avoid = Math.max(0, heightDelta - safeBottom);
+      // Apply on root of this component
+      const container = messagesContainerRef.current?.parentElement as HTMLElement | null;
+      if (container) {
+        container.style.setProperty('--kb-avoid-bottom', `${avoid}px`);
+      }
+    };
+
+    updateKbAvoid();
+    vv.addEventListener('resize', updateKbAvoid);
+    vv.addEventListener('scroll', updateKbAvoid);
+    window.addEventListener('orientationchange', updateKbAvoid);
+    return () => {
+      vv.removeEventListener('resize', updateKbAvoid);
+      vv.removeEventListener('scroll', updateKbAvoid);
+      window.removeEventListener('orientationchange', updateKbAvoid);
+    };
+  }, []);
+
+  // Measure header and input heights to set CSS vars for scroll padding
+  useEffect(() => {
+    const applySizes = () => {
+      const rootEl = messagesContainerRef.current?.parentElement as HTMLElement | null;
+      if (!rootEl) return;
+      const headerH = headerRef.current?.getBoundingClientRect().height ?? 0;
+      const inputH = inputBarRef.current?.getBoundingClientRect().height ?? 0;
+      rootEl.style.setProperty('--chat-header-h', `${Math.round(headerH)}px`);
+      rootEl.style.setProperty('--chat-input-h', `${Math.round(inputH)}px`);
+    };
+    applySizes();
+    const ro = new ResizeObserver(applySizes);
+    if (headerRef.current) ro.observe(headerRef.current);
+    if (inputBarRef.current) ro.observe(inputBarRef.current);
+    window.addEventListener('resize', applySizes);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', applySizes);
     };
   }, []);
 
@@ -159,7 +209,7 @@ export function ChatWindow({
 
   return (
     <div className={styles.root} {...swipeHandlers}>
-      <div className={styles.header}>
+      <div className={styles.header} ref={headerRef}>
         <div className={styles.headerRow}>
           {/* Back button removed per request */}
           <Avatar name={otherUser.username} online={otherUser.isOnline} />
@@ -195,7 +245,7 @@ export function ChatWindow({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className={styles.inputBar}>
+      <div className={styles.inputBar} ref={inputBarRef}>
         <form onSubmit={handleSendMessage} className={styles.form} autoComplete="off">
           <input
             type="text"

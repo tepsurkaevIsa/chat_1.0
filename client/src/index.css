@@ -99,7 +99,9 @@
       Arial, "Apple Color Emoji", "Segoe UI Emoji";
     background: var(--color-bg);
     color: var(--color-text);
+    /* Prevent page scroll; scroll only inside message list or sidebars */
     overflow: hidden;
+    height: auto;
   }
 
   /* Mobile viewport height handling
@@ -110,11 +112,11 @@
     /* Do not lock viewport height on the page itself */
     height: auto;
   }
-  #root {
-    height: 100%;
-    min-height: 0;
-    width: 100%;
-  }
+#root {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
 
   /* Form control base reset tuned for theming */
   :where(input, textarea, select, button) {
