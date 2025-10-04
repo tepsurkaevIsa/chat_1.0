@@ -4,12 +4,10 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
 import { ThemeProvider } from './components/ui/ThemeProvider'
-import KeyboardLock from './components/KeyboardLock.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider>
-      <KeyboardLock />
       <BrowserRouter>
         <App />
       </BrowserRouter>
