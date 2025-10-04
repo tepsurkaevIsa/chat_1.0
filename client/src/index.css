@@ -190,3 +190,33 @@
     }
   }
 }
+
+/* --- убираем overflow:hidden у body --- */
+/* раньше: body { ... overflow: hidden; } */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--color-bg);
+  color: var(--color-text);
+  /* разрешаем прокрутку — мобильная клавиатура корректно изменит visual viewport */
+  overflow: auto;
+}
+
+/* --- viewport height strategy: применяем на корневой контейнер, а не напрямую на html/body --- */
+/* оставьте html/body без жесткого fixed height; используйте #root или .app для layout */
+html, body {
+  /* Убираем жёсткие 100dvh/100svh/100lvh здесь */
+  min-height: 100%;
+}
+
+/* ВАЖНО: используйте это на #root или на контейнере, который занимает весь экран */
+#root, .app-root {
+  /* сначала попытка — современный dynamic viewport (если поддерживается) */
+  height: 100dvh;
+  /* fallbackы (will be overridden by JS-set --vh if present) */
+  height: calc(var(--vh, 1vh) * 100);
+  min-height: 100%;
+  overflow: auto; /* главный скролл контейнера */
+}
