@@ -4,35 +4,12 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
 import { ThemeProvider } from './components/ui/ThemeProvider'
-
-// Функция для установки кастомной переменной --vh
-function setVh() {
-  document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`)
-}
-
-// Изначальная установка
-setVh()
-
-// Отслеживание изменения высоты окна для мобильной клавиатуры
-let initialHeight = window.innerHeight
-window.addEventListener('resize', () => {
-  setVh()
-  const currentHeight = window.innerHeight
-  if (currentHeight < initialHeight) {
-    // клавиатура открылась
-    document.body.style.overflow = 'hidden'
-    document.body.classList.add('keyboard-open')
-  } else {
-    // клавиатура закрылась
-    document.body.style.overflow = ''
-    document.body.classList.remove('keyboard-open')
-  }
-})
-
+import KeyboardLock from './components/KeyboardLock.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider>
+      <KeyboardLock />
       <BrowserRouter>
         <App />
       </BrowserRouter>
