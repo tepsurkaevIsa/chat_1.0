@@ -78,22 +78,28 @@
   overscroll-behavior: none;
   }
 
-body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    touch-action: manipulation;
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-    background: var(--color-bg);
-    color: var(--color-text);
-    overflow: auto;
+  body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow: hidden;
   }
 
+  /* Mobile viewport height handling
+     Prefer dvh when available, fall back to JS-updated --vh to avoid iOS UI chrome jumps.
+     Lock layout when keyboard opens to prevent page-level scrolling. */
   html, body {
+    height: 100dvh;
+    height: 100svh;
+    height: 100lvh;
     height: calc(var(--vh, 1vh) * 100);
-    min-height: 100%;
   }
-  #root { width: 100%; }
+  #root { height: 100%; min-height: 0; width: 100%; }
 
+  /* Form control base reset tuned for theming */
   :where(input, textarea, select, button) {
     -webkit-appearance: none;
     appearance: none;
@@ -185,9 +191,32 @@ body {
   }
 }
 
+/* --- убираем overflow:hidden у body --- */
+/* раньше: body { ... overflow: hidden; } */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--color-bg);
+  color: var(--color-text);
+  /* разрешаем прокрутку — мобильная клавиатура корректно изменит visual viewport */
+  overflow: auto;
+}
+
+/* --- viewport height strategy: применяем на корневой контейнер, а не напрямую на html/body --- */
+/* оставьте html/body без жесткого fixed height; используйте #root или .app для layout */
+html, body {
+  /* Убираем жёсткие 100dvh/100svh/100lvh здесь */
+  min-height: 100%;
+}
+
+/* ВАЖНО: используйте это на #root или на контейнере, который занимает весь экран */
 #root, .app-root {
+  /* сначала попытка — современный dynamic viewport (если поддерживается) */
   height: 100dvh;
+  /* fallbackы (will be overridden by JS-set --vh if present) */
   height: calc(var(--vh, 1vh) * 100);
   min-height: 100%;
-  overflow: auto; 
+  overflow: auto; /* главный скролл контейнера */
 }
