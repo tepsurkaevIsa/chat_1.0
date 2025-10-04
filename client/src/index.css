@@ -3,101 +3,120 @@
 
 @layer tokens {
   :root {
-  --color-bg: #f3f4f6; /* gray-100 */
-  --color-surface: rgba(255, 255, 255, 0.8);
-  --color-surface-strong: rgba(255, 255, 255, 0.7);
-  --color-text: #111827; /* gray-900 */
-  --color-text-muted: #6b7280; /* gray-500 */
-  --color-border: #e5e7eb; /* gray-200 */
-  --color-surface-alt: rgba(31, 41, 55, 0.7); /* dark surface fallback for blur */
-  --color-border-alt: #1f2937; /* gray-800 */
-  --color-primary: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-online: #10b981;
+    --color-bg: #f3f4f6; /* gray-100 */
+    --color-surface: rgba(255, 255, 255, 0.8);
+    --color-surface-strong: rgba(255, 255, 255, 0.7);
+    --color-text: #111827; /* gray-900 */
+    --color-text-muted: #6b7280; /* gray-500 */
+    --color-border: #e5e7eb; /* gray-200 */
+    --color-surface-alt: rgba(
+      31,
+      41,
+      55,
+      0.7
+    ); /* dark surface fallback for blur */
+    --color-border-alt: #1f2937; /* gray-800 */
+    --color-primary: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-online: #10b981;
   }
 
   .dark:root {
-  --color-bg: #0b1020; /* near gray-950 */
-  --color-surface: rgba(3, 7, 18, 0.95);
-  --color-surface-strong: rgba(17, 24, 39, 0.7);
-  --color-text: #ffffff;
-  --color-text-muted: #9ca3af; /* gray-400 */
-  --color-border: #1f2937; /* gray-800 */
-  --color-surface-alt: rgba(17, 24, 39, 0.7);
-  --color-border-alt: #1f2937;
+    --color-bg: #0b1020; /* near gray-950 */
+    --color-surface: rgba(3, 7, 18, 0.95);
+    --color-surface-strong: rgba(17, 24, 39, 0.7);
+    --color-text: #ffffff;
+    --color-text-muted: #9ca3af; /* gray-400 */
+    --color-border: #1f2937; /* gray-800 */
+    --color-surface-alt: rgba(17, 24, 39, 0.7);
+    --color-border-alt: #1f2937;
   }
 }
 
 @layer utilities {
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
-  background: rgba(0,0,0,0.06);
+    background: rgba(0, 0, 0, 0.06);
   }
   ::-webkit-scrollbar-thumb {
-  background: rgba(100,100,100,0.5);
-  border-radius: 8px;
+    background: rgba(100, 100, 100, 0.5);
+    border-radius: 8px;
   }
   ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100,100,100,0.7);
+    background: rgba(100, 100, 100, 0.7);
   }
 
   /* Dark mode scrollbar */
   .dark ::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.06);
+    background: rgba(255, 255, 255, 0.06);
   }
   .dark ::-webkit-scrollbar-thumb {
-  background: rgba(156,163,175,0.5);
+    background: rgba(156, 163, 175, 0.5);
   }
   .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(156,163,175,0.7);
+    background: rgba(156, 163, 175, 0.7);
   }
 }
 
 @layer base {
   /* Smooth transitions */
   * {
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   }
   /* Ensure padding/borders don't increase element height beyond set values */
-  *, *::before, *::after { box-sizing: border-box; }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
   /* Avoid color/background transitions on theme toggle to prevent flicker */
-  html.dark *, html:not(.dark) * {
+  html.dark *,
+  html:not(.dark) * {
     transition-property: border-color, box-shadow;
   }
   /* Keep icons stable */
-  svg, svg * { transition: none !important; }
+  svg,
+  svg * {
+    transition: none !important;
+  }
 
   /* Base */
   html {
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: transparent;
-  overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
   }
 
   body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  touch-action: manipulation;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  background: var(--color-bg);
-  color: var(--color-text);
-  overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+      Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    background: var(--color-bg);
+    color: var(--color-text);
+    overflow: hidden;
   }
 
   /* Mobile viewport height handling
      Prefer dvh when available, fall back to JS-updated --vh to avoid iOS UI chrome jumps.
      Lock layout when keyboard opens to prevent page-level scrolling. */
-  html, body {
+  html,
+  body {
     height: 100dvh;
     height: 100svh;
     height: 100lvh;
     height: calc(var(--vh, 1vh) * 100);
   }
-  #root { height: 100%; min-height: 0; width: 100%; }
+  #root {
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+  }
 
   /* Form control base reset tuned for theming */
   :where(input, textarea, select, button) {
@@ -158,33 +177,57 @@
   }
 
   /* Hint UA to use correct native widgets */
-  :root { color-scheme: light; }
-  .dark:root { color-scheme: dark; }
+  :root {
+    color-scheme: light;
+  }
+  .dark:root {
+    color-scheme: dark;
+  }
 
   /* Utility classes preserved globally */
-  .safe-area-inset-top { padding-top: env(safe-area-inset-top); }
-  .safe-area-inset-bottom { padding-bottom: env(safe-area-inset-bottom); }
-  .safe-area-inset-left { padding-left: env(safe-area-inset-left); }
-  .safe-area-inset-right { padding-right: env(safe-area-inset-right); }
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-area-inset-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  .safe-area-inset-right {
+    padding-right: env(safe-area-inset-right);
+  }
 
   /* Touch-friendly button sizes */
   @media (max-width: 640px) {
-    button, [role="button"] {
+    button,
+    [role="button"] {
       min-height: 35px;
       min-width: 44px;
     }
-    input, textarea {
+    input,
+    textarea {
       min-height: 35px;
     }
   }
 
   /* Prevent zoom on input focus on iOS */
   @media screen and (-webkit-min-device-pixel-ratio: 0) {
-    select, textarea, input[type="text"], input[type="password"], 
-    input[type="datetime"], input[type="datetime-local"], 
-    input[type="date"], input[type="month"], input[type="time"], 
-    input[type="week"], input[type="number"], input[type="email"], 
-    input[type="url"], input[type="search"], input[type="tel"], 
+    select,
+    textarea,
+    input[type="text"],
+    input[type="password"],
+    input[type="datetime"],
+    input[type="datetime-local"],
+    input[type="date"],
+    input[type="month"],
+    input[type="time"],
+    input[type="week"],
+    input[type="number"],
+    input[type="email"],
+    input[type="url"],
+    input[type="search"],
+    input[type="tel"],
     input[type="color"] {
       font-size: 16px;
     }
@@ -197,7 +240,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   touch-action: manipulation;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Arial, "Apple Color Emoji", "Segoe UI Emoji";
   background: var(--color-bg);
   color: var(--color-text);
   /* разрешаем прокрутку — мобильная клавиатура корректно изменит visual viewport */
@@ -206,17 +250,16 @@ body {
 
 /* --- viewport height strategy: применяем на корневой контейнер, а не напрямую на html/body --- */
 /* оставьте html/body без жесткого fixed height; используйте #root или .app для layout */
-html, body {
-  /* Убираем жёсткие 100dvh/100svh/100lvh здесь */
+html,
+body {
   min-height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-/* ВАЖНО: используйте это на #root или на контейнере, который занимает весь экран */
-#root, .app-root {
-  /* сначала попытка — современный dynamic viewport (если поддерживается) */
-  height: 100dvh;
-  /* fallbackы (will be overridden by JS-set --vh if present) */
-  height: calc(var(--vh, 1vh) * 100);
-  min-height: 100%;
-  overflow: auto; /* главный скролл контейнера */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* или 100dvh/--vh для современных браузеров */
+  overflow: hidden; /* основной контейнер не скроллится */
 }
