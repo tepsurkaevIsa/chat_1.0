@@ -1,8 +1,10 @@
 .root {
-	height: 100%;
 	display: flex;
 	position: relative;
 	box-sizing: border-box;
+	/* Fill the flex parent instead of relying on percent height */
+	flex: 1 1 auto;
+	min-height: 0;
 }
 
 .themeToggleDesktop {

@@ -232,8 +232,8 @@
   }
 }
 
-/* --- убираем overflow:hidden у body --- */
-/* раньше: body { ... overflow: hidden; } */
+/* --- Страница не скроллится; скролл внутри контентных областей (например, .messages) --- */
+/* Держим overflow:hidden на body, чтобы колесо/тач скроллили только внутренние контейнеры */
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -242,8 +242,7 @@ body {
     Arial, "Apple Color Emoji", "Segoe UI Emoji";
   background: var(--color-bg);
   color: var(--color-text);
-  /* разрешаем прокрутку — мобильная клавиатура корректно изменит visual viewport */
-  overflow: auto;
+  overflow: hidden;
 }
 
 /* --- viewport height strategy: применяем на корневой контейнер, а не напрямую на html/body --- */
