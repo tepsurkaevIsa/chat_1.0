@@ -89,15 +89,10 @@ body {
   }
 
   html, body {
-    /* height: 100dvh;
-    height: 100svh;
-    height: 100lvh; */
-    height: calc(var(--vh, 1vh) * 100);
     min-height: 100%;
   }
   #root { width: 100%; }
 
-  /* Form control base reset tuned for theming */
   :where(input, textarea, select, button) {
     -webkit-appearance: none;
     appearance: none;
@@ -191,8 +186,7 @@ body {
 
 #root, .app-root {
   height: 100dvh;
-  /* fallbackы (will be overridden by JS-set --vh if present) */
   height: calc(var(--vh, 1vh) * 100);
   min-height: 100%;
-  overflow: auto; /* главный скролл контейнера */
+  overflow: auto; 
 }
