@@ -67,10 +67,10 @@
 }
 
 .statusWrap {
-	position: fixed;
-	top: 1rem;
-	right: 1rem;
-	z-index: 20;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 20;
 }
 
 .statusDot {
@@ -82,8 +82,11 @@
 .online { background: #22c55e; }
 .offline { background: #ef4444; }
 
-/* Nudge status dot up on small screens to avoid FAB overlap */
+/* On small screens, anchor to bottom without conflicting with top */
 @media (max-width: 1023.98px) {
-	.statusWrap { bottom: 4.75rem; }
+  .statusWrap {
+    top: auto;
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
 }
 

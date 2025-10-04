@@ -107,10 +107,8 @@
      Lock layout when keyboard opens to prevent page-level scrolling. */
   html,
   body {
-    height: 100dvh;
-    height: 100svh;
-    height: 100lvh;
-    height: calc(var(--vh, 1vh) * 100);
+    /* Do not lock viewport height on the page itself */
+    height: auto;
   }
   #root {
     height: 100%;
@@ -260,6 +258,10 @@ body {
 #root {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* или 100dvh/--vh для современных браузеров */
+  /* Use dynamic viewport height for correct keyboard/browser chrome behavior */
+  min-height: 100dvh;
+  min-height: 100svh;
+  min-height: 100lvh;
+  min-height: calc(var(--vh, 1vh) * 100);
   overflow: hidden; /* основной контейнер не скроллится */
 }
