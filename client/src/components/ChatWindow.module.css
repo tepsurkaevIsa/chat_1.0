@@ -45,12 +45,12 @@
 .mobileOnly { display: inline-flex; }
 @media (min-width: 1024px) { .mobileOnly { display: none; } }
 
-.messages { flex: 1 1 auto;; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 0.5rem 0.5rem; display: flex; flex-direction: column; gap: 0.5rem; -webkit-overflow-scrolling: touch; }
+.messages { flex: 1 1 auto;; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 0.5rem 0.5rem; display: flex; flex-direction: column; gap: 0.5rem; -webkit-overflow-scrolling: touch; scroll-padding-bottom: 4.5rem; }
 @media (min-width: 640px) { .messages { gap: 1rem; padding: 1rem; } }
 .empty { text-align: center; color: var(--color-text-muted); margin-top: 2rem; padding: 0 1rem; }
 .emptyInner { text-align: center; padding: 1rem; }
 
-.inputBar { padding: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); background: var(--color-surface-strong); flex-shrink: 0; backdrop-filter: blur(8px); }
+.inputBar { padding: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); background: var(--color-surface-strong); flex-shrink: 0; backdrop-filter: blur(8px); position: sticky; bottom: 0; }
 .form { display: flex; gap: 0.5rem; }
 .textInput { flex: 1; padding: 0 0.5rem; border: 1px solid var(--color-border); border-radius: 0.5rem; background: var(--color-surface); color: var(--color-text); }
 .textInput:focus { outline: none; box-shadow: 0 0 0 2px rgba(37,99,235,0.35); border-color: transparent; }
