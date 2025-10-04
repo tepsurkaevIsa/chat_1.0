@@ -15,6 +15,10 @@
 	background: var(--color-surface-strong);
 	flex-shrink: 0;
 	backdrop-filter: blur(8px);
+	/* Keep header visible at the top while messages scroll */
+	position: sticky;
+	top: 0;
+	z-index: 10;
 }
 
 .headerRow { display: flex; align-items: center; gap: 0.75rem; }
@@ -45,12 +49,29 @@
 .mobileOnly { display: inline-flex; }
 @media (min-width: 1024px) { .mobileOnly { display: none; } }
 
-.messages { flex: 1 1 auto;; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 0.5rem 0.5rem; display: flex; flex-direction: column; gap: 0.5rem; -webkit-overflow-scrolling: touch; scroll-padding-bottom: 4.5rem; }
+.messages { 
+    flex: 1 1 auto; 
+    min-height: 0; 
+    /* Dedicated scroll container for the message list */
+    overflow-y: auto; 
+    overflow-x: hidden;
+    overscroll-behavior-y: contain; 
+    padding: 0.5rem 0.5rem; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.5rem; 
+    -webkit-overflow-scrolling: touch; 
+    scroll-padding-bottom: 4.5rem; 
+    /* Improve stability of scrollbar layout on mobile */
+    scrollbar-gutter: stable;
+    /* Ensure touch vertical panning works reliably after keyboard closes */
+    touch-action: pan-y;
+}
 @media (min-width: 640px) { .messages { gap: 1rem; padding: 1rem; } }
 .empty { text-align: center; color: var(--color-text-muted); margin-top: 2rem; padding: 0 1rem; }
 .emptyInner { text-align: center; padding: 1rem; }
 
-.inputBar { padding: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); background: var(--color-surface-strong); flex-shrink: 0; backdrop-filter: blur(8px); position: sticky; bottom: 0; }
+.inputBar { padding: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); background: var(--color-surface-strong); flex-shrink: 0; backdrop-filter: blur(8px); position: sticky; bottom: 0; z-index: 10; }
 .form { display: flex; gap: 0.5rem; }
 .textInput { flex: 1; padding: 0 0.5rem; border: 1px solid var(--color-border); border-radius: 0.5rem; background: var(--color-surface); color: var(--color-text); }
 .textInput:focus { outline: none; box-shadow: 0 0 0 2px rgba(37,99,235,0.35); border-color: transparent; }

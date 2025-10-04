@@ -27,6 +27,7 @@ export function ChatWindow({
   const [messageText, setMessageText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<number>();
 
   // Swipe gestures for mobile
@@ -39,6 +40,36 @@ export function ChatWindow({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Stabilize scroll after viewport changes (e.g., mobile keyboard open/close)
+  useEffect(() => {
+    const stabilize = () => {
+      const container = messagesContainerRef.current;
+      if (!container) return;
+      // Keep scrolled to bottom so latest messages remain visible
+      container.scrollTop = container.scrollHeight;
+    };
+
+    const handleViewportChange = () => {
+      // Delay to allow layout to settle after keyboard animation
+      requestAnimationFrame(() => {
+        requestAnimationFrame(stabilize);
+      });
+    };
+
+    const vv = (window as any).visualViewport as VisualViewport | undefined;
+    vv?.addEventListener('resize', handleViewportChange);
+    vv?.addEventListener('scroll', handleViewportChange);
+    window.addEventListener('resize', handleViewportChange);
+    window.addEventListener('orientationchange', handleViewportChange);
+
+    return () => {
+      vv?.removeEventListener('resize', handleViewportChange);
+      vv?.removeEventListener('scroll', handleViewportChange);
+      window.removeEventListener('resize', handleViewportChange);
+      window.removeEventListener('orientationchange', handleViewportChange);
+    };
+  }, []);
 
   // Handle typing indicator
   useEffect(() => {
@@ -146,7 +177,7 @@ export function ChatWindow({
         </div>
       </div>
 
-      <div className={styles.messages}>
+      <div className={styles.messages} ref={messagesContainerRef}>
         {messages.length === 0 ? (
           <div className={styles.empty}>Пока нет сообщений. Начните разговор!</div>
         ) : (
@@ -171,6 +202,15 @@ export function ChatWindow({
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             onKeyPress={handleKeyPress}
+            onBlur={() => {
+              // When keyboard closes, ensure scroll remains functional and at bottom
+              const container = messagesContainerRef.current;
+              if (container) {
+                requestAnimationFrame(() => {
+                  container.scrollTop = container.scrollHeight;
+                });
+              }
+            }}
             placeholder="Введите сообщение..."
             className={styles.textInput}
             disabled={!otherUser}
