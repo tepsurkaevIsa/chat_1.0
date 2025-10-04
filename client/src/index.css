@@ -265,4 +265,30 @@ body {
   min-height: 100lvh;
   min-height: calc(var(--vh, 1vh) * 100);
   overflow: hidden; /* основной контейнер не скроллится */
+  /* Mobile keyboard handling */
+  --kb-avoid-bottom: 0px;
+}
+
+/* Mobile-specific viewport handling */
+@media (max-width: 1023px) {
+  #root {
+    /* Ensure proper height calculation on mobile */
+    height: 100vh;
+    height: 100dvh;
+    height: 100svh;
+    height: 100lvh;
+  }
+  
+  /* Prevent zoom on input focus */
+  input[type="text"],
+  input[type="password"],
+  textarea {
+    font-size: 16px !important;
+    transform: translateZ(0); /* Force hardware acceleration */
+  }
+  
+  /* Improve touch scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
 }
