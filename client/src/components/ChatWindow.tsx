@@ -55,7 +55,9 @@ export function ChatWindow({
     const handleViewportChange = () => {
       // Delay to allow layout to settle after keyboard animation
       requestAnimationFrame(() => {
-        requestAnimationFrame(stabilize);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(stabilize);
+        });
       });
     };
 
@@ -64,12 +66,41 @@ export function ChatWindow({
     vv?.addEventListener('scroll', handleViewportChange);
     window.addEventListener('resize', handleViewportChange);
     window.addEventListener('orientationchange', handleViewportChange);
+    
+    // Additional mobile-specific handlers
+    const handleTouchEnd = () => {
+      // Ensure scroll position is maintained after touch interactions
+      setTimeout(stabilize, 50);
+    };
+    
+    const handleScroll = () => {
+      // Prevent scroll jumping on mobile
+      const container = messagesContainerRef.current;
+      if (container) {
+        // If user scrolled up, don't force to bottom
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+        if (isNearBottom) {
+          container.scrollTop = container.scrollHeight;
+        }
+      }
+    };
+
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.addEventListener('touchend', handleTouchEnd);
+      container.addEventListener('scroll', handleScroll);
+    }
 
     return () => {
       vv?.removeEventListener('resize', handleViewportChange);
       vv?.removeEventListener('scroll', handleViewportChange);
       window.removeEventListener('resize', handleViewportChange);
       window.removeEventListener('orientationchange', handleViewportChange);
+      
+      if (container) {
+        container.removeEventListener('touchend', handleTouchEnd);
+        container.removeEventListener('scroll', handleScroll);
+      }
     };
   }, []);
 
@@ -82,10 +113,22 @@ export function ChatWindow({
       const heightDelta = Math.max(0, window.innerHeight - vv.height);
       const safeBottom = (window as any).CSS?.env ? 0 : 0; // env(safe-area-inset-bottom) handled in CSS
       const avoid = Math.max(0, heightDelta - safeBottom);
+      
       // Apply on root of this component
       const container = messagesContainerRef.current?.parentElement as HTMLElement | null;
       if (container) {
         container.style.setProperty('--kb-avoid-bottom', `${avoid}px`);
+        
+        // Also update document root for global mobile handling
+        document.documentElement.style.setProperty('--kb-avoid-bottom', `${avoid}px`);
+      }
+      
+      // Force scroll to bottom when keyboard opens/closes
+      const messagesContainer = messagesContainerRef.current;
+      if (messagesContainer) {
+        requestAnimationFrame(() => {
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        });
       }
     };
 
@@ -93,10 +136,25 @@ export function ChatWindow({
     vv.addEventListener('resize', updateKbAvoid);
     vv.addEventListener('scroll', updateKbAvoid);
     window.addEventListener('orientationchange', updateKbAvoid);
+    
+    // Also listen for focus events on inputs to handle keyboard
+    const handleInputFocus = () => {
+      setTimeout(updateKbAvoid, 100); // Small delay to let keyboard animation start
+    };
+    
+    const handleInputBlur = () => {
+      setTimeout(updateKbAvoid, 100); // Small delay to let keyboard animation finish
+    };
+    
+    document.addEventListener('focusin', handleInputFocus);
+    document.addEventListener('focusout', handleInputBlur);
+    
     return () => {
       vv.removeEventListener('resize', updateKbAvoid);
       vv.removeEventListener('scroll', updateKbAvoid);
       window.removeEventListener('orientationchange', updateKbAvoid);
+      document.removeEventListener('focusin', handleInputFocus);
+      document.removeEventListener('focusout', handleInputBlur);
     };
   }, []);
 
@@ -256,8 +314,11 @@ export function ChatWindow({
               // When keyboard closes, ensure scroll remains functional and at bottom
               const container = messagesContainerRef.current;
               if (container) {
+                // Use multiple requestAnimationFrame calls to ensure proper timing
                 requestAnimationFrame(() => {
-                  container.scrollTop = container.scrollHeight;
+                  requestAnimationFrame(() => {
+                    container.scrollTop = container.scrollHeight;
+                  });
                 });
               }
             }}

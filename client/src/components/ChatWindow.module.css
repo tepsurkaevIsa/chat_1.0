@@ -23,6 +23,11 @@
     position: sticky;
     top: 0;
     z-index: 15; /* Above messages and input */
+    /* Ensure header stays visible on mobile when keyboard opens */
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
 }
 
 .headerRow { display: flex; align-items: center; gap: 0.75rem; }
@@ -53,6 +58,26 @@
 .mobileOnly { display: inline-flex; }
 @media (min-width: 1024px) { .mobileOnly { display: none; } }
 
+/* Mobile-specific styles */
+@media (max-width: 1023px) {
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 20;
+  }
+  
+  .root {
+    padding-top: var(--chat-header-h);
+  }
+  
+  .messages {
+    padding-top: 0.5rem;
+  }
+}
+
 .messages { 
     flex: 1 1 auto; 
     min-height: 0; 
@@ -72,12 +97,56 @@
     scrollbar-gutter: stable both-edges;
     /* Ensure touch vertical panning works reliably after keyboard closes */
     touch-action: pan-y;
+    /* Prevent scroll issues on mobile */
+    position: relative;
+    will-change: scroll-position;
 }
 @media (min-width: 640px) { .messages { gap: 1rem; padding: 1rem; } }
 .empty { text-align: center; color: var(--color-text-muted); margin-top: 2rem; padding: 0 1rem; }
 .emptyInner { text-align: center; padding: 1rem; }
 
-.inputBar { padding: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); background: var(--color-surface-strong); flex-shrink: 0; backdrop-filter: blur(8px); position: sticky; bottom: var(--kb-avoid-bottom, 0px); z-index: 20; }
+.inputBar { 
+  padding: 0.5rem; 
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); 
+  border-top: 1px solid var(--color-border); 
+  background: var(--color-surface-strong); 
+  flex-shrink: 0; 
+  backdrop-filter: blur(8px); 
+  position: sticky; 
+  bottom: var(--kb-avoid-bottom, 0px); 
+  z-index: 20; 
+}
+
+/* Mobile-specific input bar styles */
+@media (max-width: 1023px) {
+  .inputBar {
+    position: fixed;
+    bottom: var(--kb-avoid-bottom, 0px);
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 25;
+    /* Prevent input from moving when keyboard opens */
+    transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  .root {
+    padding-bottom: calc(var(--chat-input-h) + var(--kb-avoid-bottom, 0px));
+  }
+  
+  .textInput {
+    /* Prevent zoom on focus */
+    font-size: 16px !important;
+    /* Improve touch interaction */
+    touch-action: manipulation;
+  }
+  
+  .messages {
+    /* Ensure messages don't interfere with fixed elements */
+    margin-bottom: calc(var(--chat-input-h) + var(--kb-avoid-bottom, 0px));
+  }
+}
 .form { display: flex; gap: 0.5rem; }
 .textInput { flex: 1; padding: 0 0.5rem; border: 1px solid var(--color-border); border-radius: 0.5rem; background: var(--color-surface); color: var(--color-text); }
 .textInput:focus { outline: none; box-shadow: 0 0 0 2px rgba(37,99,235,0.35); border-color: transparent; }
